@@ -6,9 +6,5 @@
   "/rcmd-api": {
     "target": "http://localhost:3334",
     "secure": false
-  },
-  "/auth-api-api": {
-    "target": "http://localhost:3335",
-    "secure": false
   }
 }
