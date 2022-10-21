@@ -1,6 +1,10 @@
 {
-  "/api": {
+  "/data-api": {
     "target": "http://localhost:3333",
+    "secure": false
+  },
+  "/rcmd-api": {
+    "target": "http://localhost:3334",
     "secure": false
   }
 }
