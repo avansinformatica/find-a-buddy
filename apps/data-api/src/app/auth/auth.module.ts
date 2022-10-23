@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { Identity, IdentitySchema } from './identity.schema';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 
-// import { CatsController } from './cats.controller';
-// import { CatsService } from './cats.service';
-// import { Cat, CatSchema } from './schemas/cat.schema';
+import { Identity, IdentitySchema } from './identity.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }])],
-  controllers: [CatsController],
-  providers: [CatsService],
+  controllers: [AuthController],
+  providers: [AuthService],
 })
-export class CatsModule {}
+export class AuthModule {}
