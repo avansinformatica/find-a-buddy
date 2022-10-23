@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 
-import { Jwt } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
-    async verifyToken(token: string): Promise<Jwt> {
-        throw Error();
+    async verifyToken(token: string): Promise<string | JwtPayload> {
+        return new Promise((resolve, reject) => {
+            verify(token, process.env.JWT_SECRET, (err, payload) => {
+                if (err) reject(err);
+                else resolve(payload);
+            })
+        })
     }
 
     async registerUser(userName: string, password: string) {
