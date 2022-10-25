@@ -4,11 +4,11 @@ import { Model, disconnect } from 'mongoose';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import { Identity, IdentityDocument, IdentitySchema } from "./identity.schema";
+import { Topic, TopicDocument, TopicSchema } from "./topic.schema";
 
-describe('Identity Schema', () => {
+describe('Topic Schema', () => {
   let mongod: MongoMemoryServer;
-  let identityModel: Model<IdentityDocument>;
+  let topicModel: Model<TopicDocument>;
 
   beforeAll(async () => {
     const app = await Test.createTestingModule({
@@ -20,11 +20,11 @@ describe('Identity Schema', () => {
             return {uri};
           },
         }),
-        MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }])
+        MongooseModule.forFeature([{ name: Topic.name, schema: TopicSchema }])
       ],
     }).compile();
 
-    identityModel = app.get<Model<IdentityDocument>>(getModelToken(Identity.name));
+    topicModel = app.get<Model<TopicDocument>>(getModelToken(Topic.name));
   });
 
   afterAll(async () => {
@@ -32,19 +32,11 @@ describe('Identity Schema', () => {
     await mongod.stop();
   });
 
-  it('has a required username', () => {
-    const model = new identityModel();
+  it('has a required title', () => {
+    const model = new topicModel();
 
     const err = model.validateSync();
 
-    expect(err.errors.username).toBeInstanceOf(Error);
-  });
-
-  it('has a required password hash', () => {
-    const model = new identityModel();
-
-    const err = model.validateSync();
-
-    expect(err.errors.hash).toBeInstanceOf(Error);
+    expect(err.errors.title).toBeInstanceOf(Error);
   });
 });
