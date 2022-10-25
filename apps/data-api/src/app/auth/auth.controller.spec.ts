@@ -9,7 +9,13 @@ describe('AuthController', () => {
   beforeAll(async () => {
     app = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [AuthService],
+      providers: [{ // mock the auth service, to avoid providing its dependencies
+        provide: AuthService,
+        useValue: {
+          registerUser: jest.fn(),
+          generateToken: jest.fn(),
+        },
+      }],
     }).compile();
   });
 

@@ -64,6 +64,7 @@
     "jest": "28.1.1",
     "jest-environment-jsdom": "28.1.1",
     "jest-preset-angular": "~12.2.2",
+    "mongodb-memory-server": "^8.9.3",
     "nx": "15.0.0",
     "prettier": "^2.6.2",
     "ts-jest": "28.0.5",
