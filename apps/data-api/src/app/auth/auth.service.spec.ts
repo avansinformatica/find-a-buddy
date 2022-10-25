@@ -1,7 +1,6 @@
 import { Test } from '@nestjs/testing';
 
 import { MongooseModule } from '@nestjs/mongoose';
-
 import { sign } from 'jsonwebtoken';
 import { hashSync } from 'bcrypt';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -14,10 +13,11 @@ import { Identity, IdentitySchema } from './identity.schema';
 describe('AuthService', () => {
   let service: AuthService;
   let mongod: MongoMemoryServer;
-  let uri: string;
   let mongoc: MongoClient;
-
+  
   beforeAll(async () => {
+    let uri: string;
+    
     const app = await Test.createTestingModule({
       imports: [
         MongooseModule.forRootAsync({
@@ -42,7 +42,7 @@ describe('AuthService', () => {
     await mongoc.close();
     await disconnect();
     await mongod.stop();
-  })
+  });
 
   describe('verify token', () => {
     it('should accept a valid token', async () => {
