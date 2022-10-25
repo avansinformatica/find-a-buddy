@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-import { Identity, IdentitySchema } from './identity.schema';
+import { Identity, IdentitySchema } from '../schemas/identity.schema';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }])],

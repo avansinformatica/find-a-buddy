@@ -6,7 +6,7 @@ import { hash, compare } from 'bcrypt';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Identity, IdentityDocument } from './identity.schema';
+import { Identity, IdentityDocument } from '../schemas/identity.schema';
 
 @Injectable()
 export class AuthService {
