@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { DataModule } from './data/auth.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(`mongodb+srv://${process.env.MONGO_USR}:${process.env.MONGO_PWD}@cluster0.hwy4fv7.mongodb.net/buddy?retryWrites=true&w=majority`),
     AuthModule,
+    DataModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
