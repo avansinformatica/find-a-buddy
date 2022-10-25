@@ -30,6 +30,7 @@ describe('AuthController', () => {
       }
 
       const register = jest.spyOn(authService, 'registerUser')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .mockImplementation(async (_u: string, _p: string) => {return;});
 
       await authController.register(exampleUser);
@@ -50,6 +51,7 @@ describe('AuthController', () => {
       const mockedToken = 'mockedToken';
 
       const register = jest.spyOn(authService, 'generateToken')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .mockImplementation(async (_u: string, _p: string) => {return mockedToken;});
 
       expect(await authController.login(exampleUser)).toBe(mockedToken);
