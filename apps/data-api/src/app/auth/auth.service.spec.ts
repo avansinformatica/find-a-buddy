@@ -38,6 +38,10 @@ describe('AuthService', () => {
     await mongoc.connect();
   });
 
+  beforeEach(async () => {
+    await mongoc.db('test').collection('identities').deleteMany({});
+  })
+
   afterAll(async () => {
     await mongoc.close();
     await disconnect();

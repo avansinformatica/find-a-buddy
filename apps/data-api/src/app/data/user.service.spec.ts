@@ -12,6 +12,14 @@ describe('UserService', () => {
   let service: UserService;
   let mongod: MongoMemoryServer;
   let mongoc: MongoClient;
+
+  const testUsers = [{
+    name: 'jan',
+  }, {
+    name: 'dion',
+  }, {
+    name: 'davide',
+  }]
   
   beforeAll(async () => {
     let uri: string;
@@ -36,8 +44,9 @@ describe('UserService', () => {
     await mongoc.connect();
   });
 
-  beforeAll(async () => {
-    // fill db
+  beforeEach(async () => {
+    await mongoc.db('test').collection('users').deleteMany({});
+    await mongoc.db('test').collection('users').insertMany(testUsers);
   });
 
   afterAll(async () => {
@@ -46,9 +55,28 @@ describe('UserService', () => {
     await mongod.stop();
   });
 
-  it.todo('should create a new user');
+  it('should create a new user', async () => {
+    const exampleUser = {name: 'mario'};
 
-  it.todo('should retrieve all users');
+    await service.create(exampleUser.name);
 
-  it.todo('should retrieve a specific user');
+    const found = await mongoc.db('test').collection('users').findOne({name: exampleUser.name});
+
+    expect(found.name).toBe(exampleUser.name);
+  });
+
+  it('should retrieve all users', async () => {
+    const results = await service.getAll();
+
+    expect(results).toHaveLength(3);
+    expect(results.map(r => r.name)).toContain('jan');
+    expect(results.map(r => r.name)).toContain('dion');
+    expect(results.map(r => r.name)).toContain('davide');
+  });
+
+  it('should retrieve a specific user', async () => {
+    const result = await service.getOne('jan');
+
+    expect(result.name).toBe('jan');
+  });
 });
