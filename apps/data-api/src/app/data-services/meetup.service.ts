@@ -16,7 +16,6 @@ export class MeetupService {
   ) {}
 
   async getInvites(userId: string): Promise<Meetup[]> {
-    // TODO use user service
     const user = await this.userModel.findOne({id: userId});
     
     if (user == null) return [];
@@ -30,7 +29,6 @@ export class MeetupService {
   async create(topic: string, datetime: Date, coachUserId: string, pupilUserId: string) {
     await this.topicService.ensureExists(topic);
 
-    // TODO use user service
     const coach = await this.userModel.findOne({id: coachUserId});
     const pupil = await this.userModel.findOne({id: pupilUserId});
 
@@ -45,7 +43,6 @@ export class MeetupService {
   }
 
   async getAll(userId: string): Promise<Meetup[]> {
-    // TODO use user service
     const user = await this.userModel.findOne({id: userId});
     
     if (user == null) return [];
@@ -57,7 +54,6 @@ export class MeetupService {
   }
 
   async getOne(userId: string, meetupId: string): Promise<Meetup | null> {
-    // TODO use user service
     const user = await this.userModel.findOne({id: userId});
 
     if (user == null) return null;

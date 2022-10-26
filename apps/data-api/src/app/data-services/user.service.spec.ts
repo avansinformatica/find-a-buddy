@@ -17,10 +17,13 @@ describe('UserService', () => {
   let meetupModel: Model<MeetupDocument>;
 
   const testUsers = [{
+    id: 'jan123',
     name: 'jan',
   }, {
+    id: 'dion123',
     name: 'dion',
   }, {
+    id: 'davide123',
     name: 'davide',
   }]
   
@@ -86,7 +89,7 @@ describe('UserService', () => {
 
   describe('getOne', () => {
     it('should retrieve a specific user', async () => {
-      const result = await service.getOne('jan');
+      const result = await service.getOne('jan123');
   
       expect(result).toHaveProperty('name', 'jan');
       expect(result.meetups).toBeUndefined();
