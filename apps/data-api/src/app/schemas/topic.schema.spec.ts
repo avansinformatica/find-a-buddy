@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { Model, disconnect } from 'mongoose';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoClient } from 'mongodb';
 
 import { Topic, TopicDocument, TopicSchema } from "./topic.schema";
 
@@ -25,6 +26,10 @@ describe('Topic Schema', () => {
     }).compile();
 
     topicModel = app.get<Model<TopicDocument>>(getModelToken(Topic.name));
+
+    // not entirely sure why we need to wait for this...
+    // https://github.com/nodkz/mongodb-memory-server/issues/102
+    await topicModel.ensureIndexes();
   });
 
   afterAll(async () => {
@@ -39,4 +44,12 @@ describe('Topic Schema', () => {
 
     expect(err.errors.title).toBeInstanceOf(Error);
   });
+
+  it('has a unique title', async () => {
+    const model = new topicModel({title: 'programming'});
+    await model.save();
+
+    const duplicate = new topicModel({title: 'programming'});
+    await expect(duplicate.save()).rejects.toThrow();
+  })
 });
