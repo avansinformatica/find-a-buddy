@@ -9,6 +9,8 @@ export class AuthController {
     @Post('register')
     async register(@Body() identityDTO: IdentityDTO) {
         await this.authService.registerUser(identityDTO.username, identityDTO.password);
+
+        // TODO create user in db
     }
 
     @Post('login')

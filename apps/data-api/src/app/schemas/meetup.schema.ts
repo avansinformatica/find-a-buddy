@@ -8,17 +8,20 @@ export type MeetupDocument = Meetup & Document;
 
 @Schema()
 export class Meetup {
-  // SAVE TOPIC IF IT DOESNT EXIST
+  // TODO: SAVE TOPIC IF IT DOESNT EXIST
   @Prop({required: true})
   topic: string;
 
   @Prop({type: ReviewSchema})
   review: Review;
 
+  @Prop({default: false})
+  accepted: boolean;
+
   @Prop({
     required: true,
     type: MongooseSchema.Types.ObjectId,
-    // ref: User.name
+    // cannot use User.name here, as it leads to a circular dependency
     ref: 'User',
   })
   coach: User;
@@ -26,7 +29,7 @@ export class Meetup {
   @Prop({
     required: true,
     type: MongooseSchema.Types.ObjectId,
-    // ref: User.name
+    // cannot use User.name here, as it leads to a circular dependency
     ref: 'User',
   })
   pupil: User;

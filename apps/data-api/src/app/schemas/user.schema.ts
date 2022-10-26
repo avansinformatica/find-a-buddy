@@ -10,18 +10,18 @@ export class User {
   @Prop({required: true})
   name: string;
 
-  // SAVE TOPIC IF IT DOESNT EXIST
+  // TODO: SAVE TOPIC IF IT DOESNT EXIST
   @Prop({default: []})
   coachTopics: [string];
 
-  // SAVE TOPIC IF IT DOESNT EXIST
+  // TODO: SAVE TOPIC IF IT DOESNT EXIST
   @Prop({default: []})
   pupilTopics: [string];
 
   @Prop({
     default: [],
     type: [MongooseSchema.Types.ObjectId],
-    // ref: Meetup.name,
+    // cannot use Meetup.name here, as it leads to a circular dependency
     ref: 'Meetup',
   })
   meetups: [Meetup];

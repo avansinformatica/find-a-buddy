@@ -48,6 +48,12 @@ describe('Meetup Schema', () => {
     expect(err.errors.topic).toBeInstanceOf(Error);
   });
 
+  it('is not accepted by default', () => {
+    const model = new meetupModel();
+
+    expect(model.accepted).toBe(false);
+  });
+
   it('has a required coach', () => {
     const model = new meetupModel();
 
