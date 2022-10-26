@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { Model, disconnect } from 'mongoose';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { validate, version } from 'uuid';
 
 import { Meetup, MeetupDocument, MeetupSchema } from "./meetup.schema";
 
@@ -30,6 +31,13 @@ describe('Meetup Schema', () => {
   afterAll(async () => {
     await disconnect();
     await mongod.stop();
+  });
+
+  it('has a default uuid v4 as id', () => {
+    const model = new meetupModel();
+
+    expect(validate(model.id)).toBeTruthy();
+    expect(version(model.id)).toBe(4);
   });
 
   it('has an optional review', () => {

@@ -1,10 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { v4 as uuid } from 'uuid';
 
 export type TopicDocument = Topic & Document;
 
 @Schema()
 export class Topic {
+  @Prop({default: uuid})
+  id: string;
+
   @Prop({required: true, unique: true})
   title: string;
 }
