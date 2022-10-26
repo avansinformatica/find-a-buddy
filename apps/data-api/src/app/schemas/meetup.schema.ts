@@ -8,7 +8,8 @@ export type MeetupDocument = Meetup & Document;
 
 @Schema()
 export class Meetup {
-  // TODO: SAVE TOPIC IF IT DOESNT EXIST
+  // we don't use hooks to ensure the topic exists, as nestjs does not play nice
+  // https://github.com/nestjs/mongoose/issues/7
   @Prop({required: true})
   topic: string;
 

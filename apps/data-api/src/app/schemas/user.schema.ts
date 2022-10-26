@@ -10,11 +10,11 @@ export class User {
   @Prop({required: true})
   name: string;
 
-  // TODO: SAVE TOPIC IF IT DOESNT EXIST
+  // we don't use hooks to ensure the topics exist, as nestjs does not play nice
+  // https://github.com/nestjs/mongoose/issues/7
   @Prop({default: []})
   coachTopics: [string];
 
-  // TODO: SAVE TOPIC IF IT DOESNT EXIST
   @Prop({default: []})
   pupilTopics: [string];
 
