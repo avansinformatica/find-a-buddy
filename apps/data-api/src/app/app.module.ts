@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { AuthModule } from './auth/auth.module';
-import { DataModule } from './data/data.module';
+import { DataModule } from './data.module';
 
 @Module({
   imports: [

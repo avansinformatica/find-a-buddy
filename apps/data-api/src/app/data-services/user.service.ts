@@ -18,6 +18,7 @@ export class UserService {
     return this.userModel.find({}, {_id: 0, __v: 0, meetups: 0});
   }
 
+  // TODO make it work on user ID!!!!!!!!
   async getOne(name: string): Promise<User | null> {
     return this.userModel.findOne({name}, {_id: 0, __v: 0, meetups: 0});
   }
