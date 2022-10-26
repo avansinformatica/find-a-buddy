@@ -13,6 +13,9 @@ export class Meetup {
   @Prop({required: true})
   topic: string;
 
+  @Prop({required: true})
+  datetime: Date;
+
   @Prop({type: ReviewSchema})
   review: Review;
 

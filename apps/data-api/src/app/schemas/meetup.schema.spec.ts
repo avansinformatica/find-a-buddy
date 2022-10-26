@@ -48,6 +48,14 @@ describe('Meetup Schema', () => {
     expect(err.errors.topic).toBeInstanceOf(Error);
   });
 
+  it('has a required datetime', () => {
+    const model = new meetupModel();
+
+    const err = model.validateSync();
+
+    expect(err.errors.datetime).toBeInstanceOf(Error);
+  })
+
   it('is not accepted by default', () => {
     const model = new meetupModel();
 
