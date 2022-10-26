@@ -25,6 +25,10 @@ describe('Identity Schema', () => {
     }).compile();
 
     identityModel = app.get<Model<IdentityDocument>>(getModelToken(Identity.name));
+
+    // not entirely sure why we need to wait for this...
+    // https://github.com/nodkz/mongodb-memory-server/issues/102
+    await identityModel.ensureIndexes();
   });
 
   afterAll(async () => {
@@ -38,6 +42,15 @@ describe('Identity Schema', () => {
     const err = model.validateSync();
 
     expect(err.errors.username).toBeInstanceOf(Error);
+  });
+
+  it('has a unique username', async () => {
+    const original = new identityModel({username: 'samename', hash: 'h123'});
+    const duplicate = new identityModel({username: 'samename', hash: 'h456'});
+
+    await original.save();
+    
+    await expect(duplicate.save()).rejects.toThrow();
   });
 
   it('has a required password hash', () => {

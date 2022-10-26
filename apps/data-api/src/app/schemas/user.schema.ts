@@ -7,7 +7,10 @@ export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Prop({required: true})
+  @Prop({
+    required: true,
+    unique: true,
+  })
   name: string;
 
   // we don't use hooks to ensure the topics exist, as nestjs does not play nice

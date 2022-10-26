@@ -25,6 +25,10 @@ describe('User Schema', () => {
     }).compile();
 
     userModel = app.get<Model<UserDocument>>(getModelToken(User.name));
+
+    // not entirely sure why we need to wait for this...
+    // https://github.com/nodkz/mongodb-memory-server/issues/102
+    await userModel.ensureIndexes();
   });
 
   afterAll(async () => {
@@ -38,6 +42,15 @@ describe('User Schema', () => {
     const err = model.validateSync();
 
     expect(err.errors.name).toBeInstanceOf(Error);
+  });
+
+  it('has a unique username', async () => {
+    const original = new userModel({name: 'henk'});
+    const duplicate = new userModel({name: 'henk'});
+
+    await original.save();
+
+    await expect(duplicate.save()).rejects.toThrow();
   });
 
   it('has an empty list as default coach topics', () => {

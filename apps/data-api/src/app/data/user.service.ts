@@ -18,7 +18,7 @@ export class UserService {
     return this.userModel.find();
   }
 
-  async getOne(name: string): Promise<User> {
+  async getOne(name: string): Promise<User | null> {
     return this.userModel.findOne({name});
   }
 }

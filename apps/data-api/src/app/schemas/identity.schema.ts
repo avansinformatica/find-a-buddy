@@ -5,7 +5,10 @@ export type IdentityDocument = Identity & Document;
 
 @Schema()
 export class Identity {
-    @Prop({required: true})
+    @Prop({
+        required: true,
+        unique: true,
+    })
     username: string;
 
     @Prop({required: true})

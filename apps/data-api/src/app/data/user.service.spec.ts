@@ -79,4 +79,10 @@ describe('UserService', () => {
 
     expect(result.name).toBe('jan');
   });
+
+  it('returns null when user is not found', async () => {
+    const result = await service.getOne('niemand');
+
+    expect(result).toBeNull();
+  });
 });
