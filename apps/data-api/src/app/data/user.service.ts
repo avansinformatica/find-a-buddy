@@ -15,10 +15,10 @@ export class UserService {
   }
 
   async getAll(): Promise<User[]> {
-    return this.userModel.find();
+    return this.userModel.find({}, {_id: 0, __v: 0, meetups: 0});
   }
 
   async getOne(name: string): Promise<User | null> {
-    return this.userModel.findOne({name});
+    return this.userModel.findOne({name}, {_id: 0, __v: 0, meetups: 0});
   }
 }

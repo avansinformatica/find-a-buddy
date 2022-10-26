@@ -1,17 +1,20 @@
 import { Test } from '@nestjs/testing';
 
-import { MongooseModule } from '@nestjs/mongoose';
+import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { disconnect } from 'mongoose';
+import { disconnect, Model } from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 import { UserService } from './user.service';
-import { User, UserSchema } from '../schemas/user.schema';
+import { User, UserDocument, UserSchema } from '../schemas/user.schema';
+import { Meetup, MeetupDocument, MeetupSchema } from '../schemas/meetup.schema';
 
 describe('UserService', () => {
   let service: UserService;
   let mongod: MongoMemoryServer;
   let mongoc: MongoClient;
+  let userModel: Model<UserDocument>;
+  let meetupModel: Model<MeetupDocument>;
 
   const testUsers = [{
     name: 'jan',
@@ -33,12 +36,15 @@ describe('UserService', () => {
             return {uri};
           },
         }),
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        MongooseModule.forFeature([{ name: Meetup.name, schema: MeetupSchema }]),
       ],
       providers: [UserService],
     }).compile();
 
     service = app.get<UserService>(UserService);
+    userModel = app.get<Model<UserDocument>>(getModelToken(User.name));
+    meetupModel = app.get<Model<MeetupDocument>>(getModelToken(Meetup.name));
 
     mongoc = new MongoClient(uri);
     await mongoc.connect();
@@ -55,34 +61,41 @@ describe('UserService', () => {
     await mongod.stop();
   });
 
-  it('should create a new user', async () => {
-    const exampleUser = {name: 'mario'};
-
-    await service.create(exampleUser.name);
-
-    const found = await mongoc.db('test').collection('users').findOne({name: exampleUser.name});
-
-    expect(found.name).toBe(exampleUser.name);
+  describe('create', () => {
+    it('should create a new user', async () => {
+      const exampleUser = {name: 'mario'};
+  
+      await service.create(exampleUser.name);
+  
+      const found = await mongoc.db('test').collection('users').findOne({name: exampleUser.name});
+  
+      expect(found.name).toBe(exampleUser.name);
+    });
   });
 
-  it('should retrieve all users', async () => {
-    const results = await service.getAll();
-
-    expect(results).toHaveLength(3);
-    expect(results.map(r => r.name)).toContain('jan');
-    expect(results.map(r => r.name)).toContain('dion');
-    expect(results.map(r => r.name)).toContain('davide');
+  describe('getAll', () => {
+    it('should retrieve all users', async () => {
+      const results = await service.getAll();
+  
+      expect(results).toHaveLength(3);
+      expect(results.map(r => r.name)).toContain('jan');
+      expect(results.map(r => r.name)).toContain('dion');
+      expect(results.map(r => r.name)).toContain('davide');
+    });
   });
 
-  it('should retrieve a specific user', async () => {
-    const result = await service.getOne('jan');
+  describe('getOne', () => {
+    it('should retrieve a specific user', async () => {
+      const result = await service.getOne('jan');
+  
+      expect(result).toHaveProperty('name', 'jan');
+      expect(result.meetups).toBeUndefined();
+    });
 
-    expect(result.name).toBe('jan');
-  });
-
-  it('returns null when user is not found', async () => {
-    const result = await service.getOne('niemand');
-
-    expect(result).toBeNull();
+    it('returns null when user is not found', async () => {
+      const result = await service.getOne('niemand');
+  
+      expect(result).toBeNull();
+    });
   });
 });

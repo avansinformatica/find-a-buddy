@@ -31,7 +31,7 @@ export class User {
     // cannot use Meetup.name here, as it leads to a circular dependency
     ref: 'Meetup',
   })
-  meetups: [Meetup];
+  meetups: Meetup[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
