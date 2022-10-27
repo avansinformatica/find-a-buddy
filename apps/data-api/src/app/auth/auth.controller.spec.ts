@@ -14,6 +14,7 @@ describe('AuthController', () => {
       providers: [{ // mock the auth service, to avoid providing its dependencies
         provide: AuthService,
         useValue: {
+          createUser: jest.fn(),
           registerUser: jest.fn(),
           generateToken: jest.fn(),
         },
@@ -24,20 +25,44 @@ describe('AuthController', () => {
    authService = app.get<AuthService>(AuthService);
   });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('register', () => {
-    it('should call the register method of the auth service', async () => {
-      const exampleUser = {
+    let exampleUser, exampleId, register, create;
+
+    beforeEach(() => {
+      exampleUser = {
         username: 'henk',
         password: 'supersecret123',
       }
+      exampleId = 'id123';
 
-      const register = jest.spyOn(authService, 'registerUser')
+      create = jest.spyOn(authService, 'createUser')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .mockImplementation(async (_u: string) => {return exampleId;});
+    });
+
+    it('should call the register and create method of the auth service on success', async () => {
+      register = jest.spyOn(authService, 'registerUser')
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .mockImplementation(async (_u: string, _p: string) => {return;});
 
-      await authController.register(exampleUser);
+      const id = await authController.register(exampleUser);
 
       expect(register).toHaveBeenCalledWith(exampleUser.username, exampleUser.password);
+      expect(create).toHaveBeenCalledWith(exampleUser.username);
+      expect(id).toHaveProperty('id', exampleId);
+    });
+
+    it('should not call create on failed register (duplicate username)', async () => {
+      register = jest.spyOn(authService, 'registerUser')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .mockImplementation(async (_u: string, _p: string) => {throw new Error('duplicate user');});
+
+      await expect(authController.register(exampleUser)).rejects.toThrow();
+      expect(create).not.toHaveBeenCalled();
     });
   });
 

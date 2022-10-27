@@ -1,4 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
+
+import { ResourceId } from '@find-a-buddy/data';
+
 import { AuthService } from './auth.service';
 import { IdentityDTO } from './identity.dto';
 
@@ -7,10 +10,12 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('register')
-    async register(@Body() identityDTO: IdentityDTO) {
+    async register(@Body() identityDTO: IdentityDTO): Promise<ResourceId> {
         await this.authService.registerUser(identityDTO.username, identityDTO.password);
 
-        // TODO create user in db, but how?! Userservice cannot be injected here...
+        return {
+            id: await this.authService.createUser(identityDTO.username)
+        };
     }
 
     @Post('login')

@@ -16,9 +16,10 @@ export class AuthService {
         @InjectModel(User.name) private userModel: Model<UserDocument>
     ) {}
 
-    async create(name: string) {
+    async createUser(name: string): Promise<string> {
         const user = new this.userModel({name});
         await user.save();
+        return user.id;
       }
 
     async verifyToken(token: string): Promise<string | JwtPayload> {
