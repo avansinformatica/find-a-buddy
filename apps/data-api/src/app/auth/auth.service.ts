@@ -40,12 +40,14 @@ export class AuthService {
     }
 
     async generateToken(username: string, password: string): Promise<string> {
-        const user = await this.identityModel.findOne({username});
+        const identity = await this.identityModel.findOne({username});
 
-        if (!user || !(await compare(password, user.hash))) throw new Error("user not authorized");
+        if (!identity || !(await compare(password, identity.hash))) throw new Error("user not authorized");
+
+        const user = await this.userModel.findOne({name: username});
 
         return new Promise((resolve, reject) => {
-            sign({username}, process.env.JWT_SECRET, (err: Error, token: string) => {
+            sign({username, id: user.id}, process.env.JWT_SECRET, (err: Error, token: string) => {
                 if (err) reject(err);
                 else resolve(token);
             });

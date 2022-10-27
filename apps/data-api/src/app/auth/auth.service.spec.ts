@@ -88,6 +88,10 @@ describe('AuthService', () => {
         username: exampleUser.username,
         hash: hashSync(exampleUser.password, parseInt(process.env.SALT_ROUNDS, 10)),
       });
+      await mongoc.db('test').collection('users').insertOne({
+        name: exampleUser.username,
+        id: 'id1234',
+      });
 
       const token = await service.generateToken(exampleUser.username, exampleUser.password);
       expect(typeof token).toBe('string');

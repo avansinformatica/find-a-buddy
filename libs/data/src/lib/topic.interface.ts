@@ -1,5 +1,5 @@
 import { Id } from "./id.type";
-import { Role } from "./role.type";
+import { Role } from "./roles";
 
 export interface Topic {
     id: Id;
