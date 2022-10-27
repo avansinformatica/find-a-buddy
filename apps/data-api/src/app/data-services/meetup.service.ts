@@ -21,21 +21,21 @@ export class MeetupService {
     if (user == null) return [];
 
     return this.meetupModel
-      .find({coach: user._id, accepted: false}, {_id: 0, __v: 0})
-      .populate('coach', {id: 1, name: 1, _id: 0})
+      .find({tutor: user._id, accepted: false}, {_id: 0, __v: 0})
+      .populate('tutor', {id: 1, name: 1, _id: 0})
       .populate('pupil', {id: 1, name: 1, _id: 0});
   }
 
-  async create(topic: string, datetime: Date, coachUserId: string, pupilUserId: string) {
+  async create(topic: string, datetime: Date, tutorUserId: string, pupilUserId: string) {
     await this.topicService.ensureExists(topic);
 
-    const coach = await this.userModel.findOne({id: coachUserId});
+    const tutor = await this.userModel.findOne({id: tutorUserId});
     const pupil = await this.userModel.findOne({id: pupilUserId});
 
     const meetup = new this.meetupModel({
       datetime,
       topic,
-      coach: coach._id,
+      tutor: tutor._id,
       pupil: pupil._id,
     });
 
@@ -48,8 +48,8 @@ export class MeetupService {
     if (user == null) return [];
 
     return this.meetupModel
-      .find({$or: [{coach: user._id, accepted: true}, {pupil: user._id}]}, {_id: 0, __v: 0})
-      .populate('coach', {id: 1, name: 1, _id: 0})
+      .find({$or: [{tutor: user._id, accepted: true}, {pupil: user._id}]}, {_id: 0, __v: 0})
+      .populate('tutor', {id: 1, name: 1, _id: 0})
       .populate('pupil', {id: 1, name: 1, _id: 0});
   }
 
@@ -59,8 +59,8 @@ export class MeetupService {
     if (user == null) return null;
 
     return this.meetupModel
-      .findOne({$and: [{id: meetupId}, {$or: [{coach: user._id}, {pupil: user._id}]}]}, {_id: 0, __v: 0})
-      .populate('coach', {id: 1, name: 1, _id: 0})
+      .findOne({$and: [{id: meetupId}, {$or: [{tutor: user._id}, {pupil: user._id}]}]}, {_id: 0, __v: 0})
+      .populate('tutor', {id: 1, name: 1, _id: 0})
       .populate('pupil', {id: 1, name: 1, _id: 0});
   }
 

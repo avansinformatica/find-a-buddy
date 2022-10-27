@@ -32,7 +32,7 @@ export class Meetup {
     // cannot use User.name here, as it leads to a circular dependency
     ref: 'User',
   })
-  coach: User;
+  tutor: User;
 
   @Prop({
     required: true,

@@ -70,12 +70,12 @@ describe('Meetup Schema', () => {
     expect(model.accepted).toBe(false);
   });
 
-  it('has a required coach', () => {
+  it('has a required tutor', () => {
     const model = new meetupModel();
 
     const err = model.validateSync();
 
-    expect(err.errors.coach).toBeInstanceOf(Error);
+    expect(err.errors.tutor).toBeInstanceOf(Error);
   });
 
   it('has a required pupil', () => {

@@ -1,1 +1,1 @@
-export type Role = 'coach' | 'pupil';
+export type Role = 'tutor' | 'pupil';

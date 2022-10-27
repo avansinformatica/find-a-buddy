@@ -111,29 +111,29 @@ describe('TopicService', () => {
     });
 
     describe('adding topics', () => {
-      describe('coach topics', () => {
+      describe('tutor topics', () => {
         it('adds a topic when it does not exist on user', async () => {
-          await service.addTopic(testUser.id, testTopic, 'coach');
+          await service.addTopic(testUser.id, testTopic, 'tutor');
     
           const user = await userModel.findOne({name: testUser.name});
     
-          expect(user.coachTopics).toContain(testTopic);
-          expect(user.coachTopics).toHaveLength(1);
+          expect(user.tutorTopics).toContain(testTopic);
+          expect(user.tutorTopics).toHaveLength(1);
         });
     
         it('does not add a topic when it does exist on user', async () => {
           const user = await userModel.findOne({name: testUser.name});
-          user.coachTopics.push(testTopic);
+          user.tutorTopics.push(testTopic);
           await user.save();
           
-          await service.addTopic(testUser.id, testTopic, 'coach');
+          await service.addTopic(testUser.id, testTopic, 'tutor');
     
-          expect(user.coachTopics).toContain(testTopic);
-          expect(user.coachTopics).toHaveLength(1);
+          expect(user.tutorTopics).toContain(testTopic);
+          expect(user.tutorTopics).toHaveLength(1);
         });
     
         it('creates a topic (in topics collection) if it does not exist on user', async () => {
-          await service.addTopic(testUser.id, testTopic, 'coach');
+          await service.addTopic(testUser.id, testTopic, 'tutor');
     
           const topics = await mongoc.db('test').collection('topics').find().toArray();
     
@@ -164,7 +164,7 @@ describe('TopicService', () => {
         });
     
         it('creates a topic (in topics collection) if it does not exist on user', async () => {
-          await service.addTopic(testUser.id, testTopic, 'coach');
+          await service.addTopic(testUser.id, testTopic, 'tutor');
     
           const topics = await mongoc.db('test').collection('topics').find().toArray();
     
@@ -180,8 +180,8 @@ describe('TopicService', () => {
 
       beforeEach(async () => {
         const user = await userModel.findOne({name: testUser.name});
-        user.coachTopics.push(testTopic);
-        user.coachTopics.push(testTopic2);
+        user.tutorTopics.push(testTopic);
+        user.tutorTopics.push(testTopic2);
         user.pupilTopics.push(testTopic);
         user.pupilTopics.push(testTopic2);
         await user.save();
@@ -190,28 +190,28 @@ describe('TopicService', () => {
         await topicModel.create({title: testTopic2});
       });
 
-      describe('coach topics', () => {
+      describe('tutor topics', () => {
         it('does not remove a topic when it does not exist on user', async () => {
-          await service.removeTopic(testUser.id, testTopic3, 'coach');
+          await service.removeTopic(testUser.id, testTopic3, 'tutor');
 
           const user = await userModel.findOne({name: testUser.name});
 
-          expect(user.coachTopics).toHaveLength(2);
-          expect(user.coachTopics).toContain(testTopic);
-          expect(user.coachTopics).toContain(testTopic2);
+          expect(user.tutorTopics).toHaveLength(2);
+          expect(user.tutorTopics).toContain(testTopic);
+          expect(user.tutorTopics).toContain(testTopic2);
         });
 
         it('removes a topic when it does exist on user', async () => {
-          await service.removeTopic(testUser.id, testTopic2, 'coach');
+          await service.removeTopic(testUser.id, testTopic2, 'tutor');
 
           const user = await userModel.findOne({name: testUser.name});
 
-          expect(user.coachTopics).toHaveLength(1);
-          expect(user.coachTopics).toContain(testTopic);
+          expect(user.tutorTopics).toHaveLength(1);
+          expect(user.tutorTopics).toContain(testTopic);
         });
 
         it('leaves topic (in topics collection) when removing a topic', async () => {
-          await service.removeTopic(testUser.id, testTopic2, 'coach');
+          await service.removeTopic(testUser.id, testTopic2, 'tutor');
 
           const topics = await topicModel.find();
 

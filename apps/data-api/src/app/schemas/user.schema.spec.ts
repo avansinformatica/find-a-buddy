@@ -61,10 +61,10 @@ describe('User Schema', () => {
     await expect(duplicate.save()).rejects.toThrow();
   });
 
-  it('has an empty list as default coach topics', () => {
+  it('has an empty list as default tutor topics', () => {
     const model = new userModel();
 
-    expect(model.coachTopics).toStrictEqual([]);
+    expect(model.tutorTopics).toStrictEqual([]);
   });
 
   it('has an empty list as default pupil topics', () => {

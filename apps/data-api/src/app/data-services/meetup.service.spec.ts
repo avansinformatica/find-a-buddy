@@ -59,20 +59,20 @@ describe('UserService', () => {
     yoshi = new userModel({name: 'yoshi'});
     toad = new userModel({name: 'toad'});
     meetupA = new meetupModel({
-      coach: mario._id,
+      tutor: mario._id,
       pupil: luigi._id,
       topic: 'coins',
       datetime: Date.now(),
     });
     meetupB = new meetupModel({
-      coach: yoshi._id,
+      tutor: yoshi._id,
       pupil: toad._id,
       topic: 'coins',
       datetime: Date.now(),
       accepted: true,
     });
     meetupC = new meetupModel({
-      coach: toad._id,
+      tutor: toad._id,
       pupil: yoshi._id,
       topic: 'tubes',
       datetime: Date.now(),
@@ -116,7 +116,7 @@ describe('UserService', () => {
   });
   
   describe('getAll', () => {
-    it('shows all meetups where you are a pupil and accepted meetings where you are coach', async () => {
+    it('shows all meetups where you are a pupil and accepted meetings where you are tutor', async () => {
       const results = await service.getAll(yoshi.id);
       
       expect(results).toHaveLength(2);
@@ -138,13 +138,13 @@ describe('UserService', () => {
       expect(result).toHaveProperty('id', meetupA.id);
     });
 
-    it('retrieves one accepted meetup where you are coach', async () => {
+    it('retrieves one accepted meetup where you are tutor', async () => {
       const result = await service.getOne(yoshi.id, meetupB.id);
       
       expect(result).toHaveProperty('id', meetupB.id);
     });
 
-    it('retrieves one unaccepted meetup where you are coach', async () => {
+    it('retrieves one unaccepted meetup where you are tutor', async () => {
       const result = await service.getOne(toad.id, meetupC.id);
       
       expect(result).toHaveProperty('id', meetupC.id);

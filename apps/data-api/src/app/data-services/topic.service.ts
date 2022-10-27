@@ -28,16 +28,16 @@ export class TopicService {
   async addTopic(userId: string, topic: string, role: Role) {
     await this.ensureExists(topic);
 
-    if (role == 'coach') {
-      await this.userModel.updateOne({id: userId}, {$addToSet: {coachTopics: topic}});
+    if (role == 'tutor') {
+      await this.userModel.updateOne({id: userId}, {$addToSet: {tutorTopics: topic}});
     } else {
       await this.userModel.updateOne({id: userId}, {$addToSet: {pupilTopics: topic}});
     }
   }
 
   async removeTopic(userId: string, topic: string, role: Role) {
-    if (role == 'coach') {
-      await this.userModel.updateOne({id: userId}, {$pull: {coachTopics: topic}});
+    if (role == 'tutor') {
+      await this.userModel.updateOne({id: userId}, {$pull: {tutorTopics: topic}});
     } else {
       await this.userModel.updateOne({id: userId}, {$pull: {pupilTopics: topic}});
     }
