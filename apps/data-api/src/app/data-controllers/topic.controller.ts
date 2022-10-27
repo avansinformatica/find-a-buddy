@@ -2,8 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 
 import { TopicService } from '../data-services/topic.service';
 
-import { Topic } from '@find-a-buddy/data';
-import { Role } from '../schemas/roles';
+import { ResourceId, Topic, TopicUpdate } from '@find-a-buddy/data';
 
 @Controller('topic')
 export class TopicController {
@@ -14,13 +13,13 @@ export class TopicController {
         return this.topicService.getAll();
     }
 
-    @Post(':id')
-    async addTopic(@Body() topicChange: {role: Role}, @Param('id') topicId: string) {
-        // await this.topicService.addTopic(, topic, topicChange.role) // ugh...
-    }
+    // @Post()
+    // async addTopic(@Body() topicUpdate: TopicUpdate): Promise<ResourceId> {
+    //     // await this.topicService.addTopic(, topic, topicChange.role) // ugh...
+    // }
 
     // @Delete(':id')
-    // async removeTopic() {
-
+    // async removeTopic(@Body() topicUpdate: TopicUpdate, @Param('id') topicId: string): Promise<ResourceId> {
+    //     // return the removed topic id on success
     // }
 }

@@ -5,7 +5,7 @@ import { ResourceId } from '@find-a-buddy/data';
 import { AuthService } from './auth.service';
 import { IdentityDTO } from './identity.dto';
 
-@Controller('auth-api')
+@Controller()
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 

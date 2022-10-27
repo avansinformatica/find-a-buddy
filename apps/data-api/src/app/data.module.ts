@@ -1,15 +1,27 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-// import { AuthController } from './auth.controller';
-// import { AuthService } from './auth.service';
+import { TopicController } from './data-controllers/topic.controller';
+import { MeetupService } from './data-services/meetup.service';
+import { TopicService } from './data-services/topic.service';
+import { UserService } from './data-services/user.service';
 
-// import { Identity, IdentitySchema } from './identity.schema';
+import { User, UserSchema } from './schemas/user.schema';
+import { Topic, TopicSchema } from './schemas/topic.schema';
+import { Meetup, MeetupSchema } from './schemas/meetup.schema';
 
 @Module({
-  // imports: [MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }])],
-  imports: [],
-  controllers: [],
-  providers: [],
+  imports: [
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Topic.name, schema: TopicSchema },
+      { name: Meetup.name, schema: MeetupSchema }]),
+  ],
+  controllers: [TopicController],
+  providers: [
+    UserService,
+    TopicService,
+    MeetupService,
+  ],
 })
 export class DataModule {}

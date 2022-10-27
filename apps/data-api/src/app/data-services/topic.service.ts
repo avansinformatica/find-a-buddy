@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { Topic, TopicDocument } from '../schemas/topic.schema';
 import { User, UserDocument } from '../schemas/user.schema';
-import { Role } from '../schemas/roles';
+import { Role } from '../../../../../libs/data/src/lib/role.type';
 
 @Injectable()
 export class TopicService {
