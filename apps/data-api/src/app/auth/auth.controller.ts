@@ -10,7 +10,7 @@ export class AuthController {
     async register(@Body() identityDTO: IdentityDTO) {
         await this.authService.registerUser(identityDTO.username, identityDTO.password);
 
-        // TODO create user in db
+        // TODO create user in db, but how?! Userservice cannot be injected here...
     }
 
     @Post('login')

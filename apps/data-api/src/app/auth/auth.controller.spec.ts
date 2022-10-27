@@ -5,6 +5,8 @@ import { AuthService } from './auth.service';
 
 describe('AuthController', () => {
   let app: TestingModule;
+  let authController: AuthController;
+  let authService: AuthService;
 
   beforeAll(async () => {
     app = await Test.createTestingModule({
@@ -17,13 +19,13 @@ describe('AuthController', () => {
         },
       }],
     }).compile();
+
+   authController = app.get<AuthController>(AuthController);
+   authService = app.get<AuthService>(AuthService);
   });
 
   describe('register', () => {
     it('should call the register method of the auth service', async () => {
-      const authController = app.get<AuthController>(AuthController);
-      const authService = app.get<AuthService>(AuthService);
-
       const exampleUser = {
         username: 'henk',
         password: 'supersecret123',
@@ -41,9 +43,6 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should call the generateToken method of the auth service', async () => {
-      const authController = app.get<AuthController>(AuthController);
-      const authService = app.get<AuthService>(AuthService);
-
       const exampleUser = {
         username: 'henk',
         password: 'supersecret123',

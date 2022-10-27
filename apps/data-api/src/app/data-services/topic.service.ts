@@ -25,21 +25,21 @@ export class TopicService {
     return this.topicModel.find();
   }
 
-  async addTopic(username: string, topic: string, role: Role) {
+  async addTopic(userId: string, topic: string, role: Role) {
     await this.ensureExists(topic);
 
     if (role == 'coach') {
-      await this.userModel.updateOne({name: username}, {$addToSet: {coachTopics: topic}});
+      await this.userModel.updateOne({id: userId}, {$addToSet: {coachTopics: topic}});
     } else {
-      await this.userModel.updateOne({name: username}, {$addToSet: {pupilTopics: topic}});
+      await this.userModel.updateOne({id: userId}, {$addToSet: {pupilTopics: topic}});
     }
   }
 
-  async removeTopic(username: string, topic: string, role: Role) {
+  async removeTopic(userId: string, topic: string, role: Role) {
     if (role == 'coach') {
-      await this.userModel.updateOne({name: username}, {$pull: {coachTopics: topic}});
+      await this.userModel.updateOne({id: userId}, {$pull: {coachTopics: topic}});
     } else {
-      await this.userModel.updateOne({name: username}, {$pull: {pupilTopics: topic}});
+      await this.userModel.updateOne({id: userId}, {$pull: {pupilTopics: topic}});
     }
   }
 }

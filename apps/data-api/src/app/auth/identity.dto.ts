@@ -1,4 +1,4 @@
-export class IdentityDTO {
-    public readonly username: string;
-    public readonly password: string;
+export interface IdentityDTO {
+    readonly username: string;
+    readonly password: string;
 }
