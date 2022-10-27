@@ -6,7 +6,7 @@ export type TopicDocument = Topic & Document;
 
 @Schema()
 export class Topic {
-  @Prop({default: uuid})
+  @Prop({default: uuid, index: true})
   id: string;
 
   @Prop({required: true, unique: true})

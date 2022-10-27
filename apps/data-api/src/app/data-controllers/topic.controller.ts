@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { TopicService } from '../data-services/topic.service';
 
 import { ResourceId, Topic, TopicUpdate } from '@find-a-buddy/data';
+import { InjectToken, Token } from '../auth/token.decorator';
 
 @Controller('topic')
 export class TopicController {
@@ -13,13 +14,13 @@ export class TopicController {
         return this.topicService.getAll();
     }
 
-    // @Post()
-    // async addTopic(@Body() topicUpdate: TopicUpdate): Promise<ResourceId> {
-    //     // await this.topicService.addTopic(, topic, topicChange.role) // ugh...
-    // }
+    @Post()
+    async addTopic(@InjectToken() token: Token, @Body() topicUpdate: TopicUpdate) {
+        await this.topicService.addTopic(token.id, topicUpdate.title, topicUpdate.role)
+    }
 
-    // @Delete(':id')
-    // async removeTopic(@Body() topicUpdate: TopicUpdate, @Param('id') topicId: string): Promise<ResourceId> {
-    //     // return the removed topic id on success
-    // }
+    @Delete()
+    async removeTopic(@InjectToken() token: Token, @Body() topicUpdate: TopicUpdate) {
+        await this.topicService.removeTopic(token.id, topicUpdate.title, topicUpdate.role);
+    }
 }
