@@ -7,10 +7,19 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Identity, IdentityDocument } from '../schemas/identity.schema';
+import { User, UserDocument } from '../schemas/user.schema';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel(Identity.name) private identityModel: Model<IdentityDocument>) {}
+    constructor(
+        @InjectModel(Identity.name) private identityModel: Model<IdentityDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>
+    ) {}
+
+    async create(name: string) {
+        const user = new this.userModel({name});
+        await user.save();
+      }
 
     async verifyToken(token: string): Promise<string | JwtPayload> {
         return new Promise((resolve, reject) => {

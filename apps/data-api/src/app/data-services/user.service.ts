@@ -9,11 +9,6 @@ import { User, UserDocument } from '../schemas/user.schema';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(name: string) {
-    const user = new this.userModel({name});
-    await user.save();
-  }
-
   async getAll(): Promise<User[]> {
     return this.userModel.find({}, {_id: 0, __v: 0, meetups: 0});
   }

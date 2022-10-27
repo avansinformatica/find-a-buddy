@@ -64,18 +64,6 @@ describe('UserService', () => {
     await mongod.stop();
   });
 
-  describe('create', () => {
-    it('should create a new user', async () => {
-      const exampleUser = {name: 'mario'};
-  
-      await service.create(exampleUser.name);
-  
-      const found = await mongoc.db('test').collection('users').findOne({name: exampleUser.name});
-  
-      expect(found.name).toBe(exampleUser.name);
-    });
-  });
-
   describe('getAll', () => {
     it('should retrieve all users', async () => {
       const results = await service.getAll();

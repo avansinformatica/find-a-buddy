@@ -9,6 +9,7 @@ import { MongoClient } from 'mongodb';
 
 import { AuthService } from './auth.service';
 import { Identity, IdentitySchema } from '../schemas/identity.schema';
+import { User, UserSchema } from '../schemas/user.schema';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -27,7 +28,8 @@ describe('AuthService', () => {
             return {uri};
           },
         }),
-        MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }])
+        MongooseModule.forFeature([{ name: Identity.name, schema: IdentitySchema }]),
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
       ],
       providers: [AuthService],
     }).compile();
@@ -46,6 +48,18 @@ describe('AuthService', () => {
     await mongoc.close();
     await disconnect();
     await mongod.stop();
+  });
+
+  describe('create', () => {
+    it('should create a new user', async () => {
+      const exampleUser = {name: 'mario'};
+  
+      await service.create(exampleUser.name);
+  
+      const found = await mongoc.db('test').collection('users').findOne({name: exampleUser.name});
+  
+      expect(found.name).toBe(exampleUser.name);
+    });
   });
 
   describe('verify token', () => {
