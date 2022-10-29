@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
 
 import { TopicService } from '../data-services/topic.service';
 
-import { ResourceId, Topic, TopicUpdate } from '@find-a-buddy/data';
+import { Topic, TopicUpdate } from '@find-a-buddy/data';
 import { InjectToken, Token } from '../auth/token.decorator';
 
 @Controller('topic')

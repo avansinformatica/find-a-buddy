@@ -1,9 +1,16 @@
 import { Id } from "./id.type";
+import { Review } from "./review.interface";
 
-export interface User {
+export interface UserSummary {
     id: Id;
-
     name: string;
-    
-    reviews: [Id];
+
+    rating: number;
+
+    pupilTopics: string[];
+    tutorTopics: string[];
+}
+
+export interface User extends UserSummary {
+    reviews: Review[];
 }

@@ -4,8 +4,10 @@ export interface Review {
     id: Id;
     
     rating: number;
-    text: string;
+    text?: string;
     
-    reviewerId: Id;
-    revieweeId: Id;
+    pupil: Id;
+    tutor: Id;
+
+    datetime: Date;
 }

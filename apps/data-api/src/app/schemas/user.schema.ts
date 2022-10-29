@@ -20,10 +20,10 @@ export class User {
   // we don't use hooks to ensure the topics exist, as nestjs does not play nice
   // https://github.com/nestjs/mongoose/issues/7
   @Prop({default: []})
-  tutorTopics: [string];
+  tutorTopics: string[];
 
   @Prop({default: []})
-  pupilTopics: [string];
+  pupilTopics: string[];
 
   @Prop({
     default: [],

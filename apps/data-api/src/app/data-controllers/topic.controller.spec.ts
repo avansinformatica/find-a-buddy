@@ -14,7 +14,7 @@ describe('TopicController', () => {
   beforeAll(async () => {
     app = await Test.createTestingModule({
       controllers: [TopicController],
-      providers: [{ // mock the auth service, to avoid providing its dependencies
+      providers: [{ // mock the service, to avoid providing its dependencies
         provide: TopicService,
         useValue: {
           getAll: jest.fn(),
