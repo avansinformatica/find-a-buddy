@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@
 
 import { MeetupService } from '../data-services/meetup.service';
 
-import { Meetup, MeetupCreation, ReviewCreation } from '@find-a-buddy/data';
+import { Meetup, MeetupCreation, Review } from '@find-a-buddy/data';
 import { InjectToken, Token } from '../auth/token.decorator';
 
 @Controller('meetup')
@@ -34,7 +34,7 @@ export class MeetupController {
   }
 
   @Post('/:id/review')
-  async postReview(@InjectToken() token: Token, @Param('id') id: string, @Body() review: ReviewCreation) {
+  async postReview(@InjectToken() token: Token, @Param('id') id: string, @Body() review: Review) {
     try {
       await this.meetupService.postReview(token.id, id, review.text, review.rating);
     } catch (e) {
