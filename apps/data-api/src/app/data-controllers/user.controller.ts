@@ -2,7 +2,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 
 import { UserService } from '../data-services/user.service';
 
-import { UserSummary, User } from '@find-a-buddy/data';
+import { UserInfo, User } from '@find-a-buddy/data';
 import { InjectToken, Token } from '../auth/token.decorator';
 
 @Controller('user')
@@ -10,7 +10,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async getAll(): Promise<UserSummary[]> {
+  async getAll(): Promise<UserInfo[]> {
     return this.userService.getAll();
   }
 

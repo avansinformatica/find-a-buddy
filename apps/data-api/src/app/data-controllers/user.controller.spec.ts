@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { UserController } from './user.controller';
 
-import { Token } from '../auth/token.decorator';
 import { UserService } from '../data-services/user.service';
 
 describe('TopicController', () => {

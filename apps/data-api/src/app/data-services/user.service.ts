@@ -5,13 +5,13 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { User as UserModel, UserDocument } from '../schemas/user.schema';
 
-import { User, UserSummary } from '@find-a-buddy/data';
+import { User, UserInfo } from '@find-a-buddy/data';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(UserModel.name) private userModel: Model<UserDocument>) {}
 
-  async getAll(): Promise<UserSummary[]> {
+  async getAll(): Promise<UserInfo[]> {
     return this.userModel.aggregate([
       {$lookup: {
         from: 'meetups',

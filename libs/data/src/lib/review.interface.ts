@@ -11,3 +11,8 @@ export interface Review {
 
     datetime: Date;
 }
+
+export interface ReviewCreation {
+    rating: number;
+    text?: string;
+}

@@ -27,10 +27,18 @@ export class MeetupService {
   }
 
   async create(topic: string, datetime: Date, tutorUserId: string, pupilUserId: string) {
-    await this.topicService.ensureExists(topic);
+    // await this.topicService.ensureExists(topic);
 
     const tutor = await this.userModel.findOne({id: tutorUserId});
     const pupil = await this.userModel.findOne({id: pupilUserId});
+
+    if (!tutor || !pupil) {
+      throw new Error('user not found');
+    }
+
+    if (!tutor.tutorTopics.find(t => t == topic) || !pupil.pupilTopics.find(t => t == topic)) {
+      throw new Error('invalid meetup');
+    }
 
     const meetup = new this.meetupModel({
       datetime,
@@ -39,7 +47,10 @@ export class MeetupService {
       pupil: pupil._id,
     });
 
-    await meetup.save();
+    tutor.meetups.push(meetup);
+    pupil.meetups.push(meetup);
+
+    await Promise.all([meetup.save(), tutor.save(), pupil.save()]);
   }
 
   async getAll(userId: string): Promise<Meetup[]> {

@@ -18,7 +18,7 @@ describe('UserService', () => {
   let userModel: Model<UserDocument>;
   let meetupModel: Model<MeetupDocument>;
   let topicModel: Model<TopicDocument>;
-  let mario, luigi, yoshi, toad, meetupA, meetupB, meetupC;
+  let mario, luigi, yoshi, toad, meetupA, meetupB, meetupC, topicCoins, topicTubes, topicMushrooms;
 
   beforeAll(async () => {
     let uri: string;
@@ -54,10 +54,15 @@ describe('UserService', () => {
     await mongoc.db('test').collection('meetups').deleteMany({});
     await mongoc.db('test').collection('topics').deleteMany({});
 
-    mario = new userModel({name: 'mario'});
-    luigi = new userModel({name: 'luigi'});
-    yoshi = new userModel({name: 'yoshi'});
-    toad = new userModel({name: 'toad'});
+    topicCoins = new topicModel({title: 'coins'});
+    topicTubes = new topicModel({title: 'tubes'});
+    topicMushrooms = new topicModel({title: 'mushrooms'});
+
+    mario = new userModel({name: 'mario', tutorTopics: ['coins'], pupilTopics: ['mushrooms']});
+    luigi = new userModel({name: 'luigi', pupilTopics: ['coins']});
+    yoshi = new userModel({name: 'yoshi', tutorTopics: ['coins'], pupilTopics: ['tubes']});
+    toad = new userModel({name: 'toad', tutorTopics: ['tubes', 'mushrooms'], pupilTopics: ['coins']});
+
     meetupA = new meetupModel({
       tutor: mario._id,
       pupil: luigi._id,
@@ -77,7 +82,19 @@ describe('UserService', () => {
       topic: 'tubes',
       datetime: Date.now(),
     });
-    await Promise.all([mario.save(), luigi.save(), yoshi.save(), toad.save(), meetupA.save(), meetupB.save(), meetupC.save()]);
+
+    await Promise.all([
+      mario.save(), 
+      luigi.save(), 
+      yoshi.save(), 
+      toad.save(), 
+      meetupA.save(), 
+      meetupB.save(), 
+      meetupC.save(), 
+      topicCoins.save(),
+      topicTubes.save(),
+      topicMushrooms.save()
+    ]);
   });
 
   afterAll(async () => {
@@ -92,6 +109,8 @@ describe('UserService', () => {
 
       expect(results).toHaveLength(1);
       expect(results[0].id).toStrictEqual(meetupA.id);
+      expect(results[0]).toHaveProperty('_id', undefined);
+      expect(results[0]).toHaveProperty('__v', undefined);
     });
 
     it('returns an empty list for non-existing user', async () => {
@@ -105,13 +124,31 @@ describe('UserService', () => {
     it('creates a meetup', async () => {
       await service.create('mushrooms', new Date(), toad.id, mario.id);
 
-      const topics = await topicModel.find();
-      
-      expect(topics.map(t => t.title)).toContain('mushrooms');
-
       const meetup = await meetupModel.find();
 
-      expect(meetup.map(m => m.topic)).toContain('mushrooms')
+      expect(meetup.map(m => m.topic)).toContain('mushrooms');
+
+      const updatedToad = await userModel.findOne({id: toad.id});
+      const updatedMario = await userModel.findOne({id: mario.id});
+
+      expect(updatedToad.meetups).toHaveLength(1);
+      expect(updatedMario.meetups).toHaveLength(1);
+    });
+
+    it('throws when tutor user is not present', async () => {
+      await expect(service.create('mushrooms', new Date(), 'invalidid', mario.id)).rejects.toThrow();
+    });
+
+    it('throws when pupil user is not present', async () => {
+      await expect(service.create('mushrooms', new Date(), toad.id, 'invalidid')).rejects.toThrow();
+    });
+
+    it('throws when topic is not present for tutor', async () => {
+      await expect(service.create('tubes', new Date(), luigi.id, yoshi.id)).rejects.toThrow();
+    });
+
+    it('throws when topic is not present for pupil', async () => {
+      await expect(service.create('mushrooms', new Date(), toad.id, luigi.id)).rejects.toThrow();
     });
   });
   
