@@ -19,6 +19,7 @@ describe('TopicController', () => {
           create: jest.fn(),
           getAll: jest.fn(),
           getOne: jest.fn(),
+          postReview: jest.fn(),
         },
       }],
     }).compile();
@@ -53,7 +54,7 @@ describe('TopicController', () => {
       const topic = 'mushrooms';
       const time = new Date();
       const pupilId = 'id123';
-      const tutorId = 'id456'
+      const tutorId = 'id456';
 
       await meetupController.create({id: pupilId, username: 'mario'}, {topic, tutorId, datetime: time});
 
@@ -69,7 +70,7 @@ describe('TopicController', () => {
       const topic = 'mushrooms';
       const time = new Date();
       const pupilId = 'id123';
-      const tutorId = 'id456'
+      const tutorId = 'id456';
 
       await expect(meetupController.create({id: pupilId, username: 'mario'}, {topic, tutorId, datetime: time})).rejects.toThrow();
 
@@ -99,10 +100,10 @@ describe('TopicController', () => {
         datetime: new Date(),
         topic: 'math',
         pupil: {id: 'pupilId', name: 'pupil'},
-        tutor: {id: 'pupilId', name: 'pupil'},
+        tutor: {id: 'tutorId', name: 'tutor'},
         accepted: true,
         review: undefined,
-      }
+      };
 
       const getOne = jest.spyOn(meetupService, 'getOne')
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -113,6 +114,38 @@ describe('TopicController', () => {
       expect(getOne).toBeCalledTimes(1);
       expect(getOne).toBeCalledWith('id123', exampleMeetup.id);
       expect(result).toStrictEqual(exampleMeetup);
+    });
+  });
+
+  describe('postReview', () => {
+    it('calls postReview on the service', async () => {
+      const postReview = jest.spyOn(meetupService, 'postReview')
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .mockImplementation(async () => {});
+
+      const token = {id: 'id123', username: 'user123'};
+      const id = 'meetup123';
+      const review = {rating: 5};
+
+      await meetupController.postReview(token, id, review);
+
+      expect(postReview).toBeCalledTimes(1);
+      expect(postReview).toBeCalledWith(token.id, id, undefined, review.rating);
+    });
+
+    it('throws a bad request if review is invalid', async () => {
+      const postReview = jest.spyOn(meetupService, 'postReview')
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .mockImplementation(async () => {throw new Error('invalid')});
+
+        const token = {id: 'id123', username: 'user123'};
+        const id = 'meetup123';
+        const review = {rating: 5};
+
+      await expect(meetupController.postReview(token, id, review)).rejects.toThrow();
+
+      expect(postReview).toBeCalledTimes(1);
+      expect(postReview).toBeCalledWith(token.id, id, undefined, review.rating);
     });
   });
 });

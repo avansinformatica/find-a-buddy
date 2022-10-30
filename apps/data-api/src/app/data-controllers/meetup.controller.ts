@@ -33,8 +33,12 @@ export class MeetupController {
     }
   }
 
-  // @Post('/:id/review')
-  // async postReview(@InjectToken() token: Token, @Body() review: ReviewCreation) {
-
-  // }
+  @Post('/:id/review')
+  async postReview(@InjectToken() token: Token, @Param('id') id: string, @Body() review: ReviewCreation) {
+    try {
+      await this.meetupService.postReview(token.id, id, review.text, review.rating);
+    } catch (e) {
+      throw new HttpException('invalid review', HttpStatus.BAD_REQUEST);
+    }
+  }
 }
