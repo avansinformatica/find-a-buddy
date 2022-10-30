@@ -3,14 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Meetup, MeetupDocument } from '../schemas/meetup.schema';
+import { Meetup } from '@find-a-buddy/data';
+import { Meetup as MeetupModel, MeetupDocument } from '../schemas/meetup.schema';
 import { User, UserDocument } from '../schemas/user.schema';
 import { TopicService } from './topic.service';
 
 @Injectable()
 export class MeetupService {
   constructor(
-    @InjectModel(Meetup.name) private meetupModel: Model<MeetupDocument>,
+    @InjectModel(MeetupModel.name) private meetupModel: Model<MeetupDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private topicService: TopicService,
   ) {}

@@ -1,4 +1,5 @@
 import { Id } from "./id.type";
+import { Review } from "./review.interface";
 import { UserIdentity } from "./user.interface";
 
 export interface Meetup {
@@ -11,7 +12,7 @@ export interface Meetup {
     tutor: UserIdentity;
     accepted: boolean;
 
-    reviewId?: string;
+    review?: Review;
 }
 
 export interface MeetupCreation {

@@ -17,6 +17,8 @@ describe('TopicController', () => {
         useValue: {
           getInvites: jest.fn(),
           create: jest.fn(),
+          getAll: jest.fn(),
+          getOne: jest.fn(),
         },
       }],
     }).compile();
@@ -73,6 +75,44 @@ describe('TopicController', () => {
 
       expect(create).toBeCalledTimes(1);
       expect(create).toBeCalledWith(topic, time, tutorId, pupilId);
+    });
+  });
+
+  describe('getMeetups', () => {
+    it('calls getAll on the service', async () => {
+      const getAll = jest.spyOn(meetupService, 'getAll')
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      .mockImplementation(async () => []);
+
+    const result = await meetupController.getMeetups({id: 'id123', username: 'name123'});
+
+    expect(getAll).toBeCalledTimes(1);
+    expect(getAll).toBeCalledWith('id123');
+    expect(result).toStrictEqual([]);
+    });
+  });
+
+  describe('getMeetup', () => {
+    it('calls getOne on the service', async () => {
+      const exampleMeetup = {
+        id: 'id456',
+        datetime: new Date(),
+        topic: 'math',
+        pupil: {id: 'pupilId', name: 'pupil'},
+        tutor: {id: 'pupilId', name: 'pupil'},
+        accepted: true,
+        review: undefined,
+      }
+
+      const getOne = jest.spyOn(meetupService, 'getOne')
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .mockImplementation(async () => exampleMeetup);
+
+      const result = await meetupController.getMeetup({id: 'id123', username: 'name123'}, exampleMeetup.id);
+
+      expect(getOne).toBeCalledTimes(1);
+      expect(getOne).toBeCalledWith('id123', exampleMeetup.id);
+      expect(result).toStrictEqual(exampleMeetup);
     });
   });
 });

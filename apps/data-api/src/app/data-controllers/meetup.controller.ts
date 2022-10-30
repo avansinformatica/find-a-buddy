@@ -14,10 +14,15 @@ export class MeetupController {
     return this.meetupService.getInvites(token.id);
   }
 
-  // @Get()
-  // async getMeetups(@InjectToken() token: Token): Promise<Meetup[]> {
+  @Get()
+  async getMeetups(@InjectToken() token: Token): Promise<Meetup[]> {
+    return this.meetupService.getAll(token.id);
+  }
 
-  // }
+  @Get(':id')
+  async getMeetup(@InjectToken() token: Token, @Param('id') id: string): Promise<Meetup> {
+    return this.meetupService.getOne(token.id, id);
+  }
 
   @Post()
   async create(@InjectToken() token: Token, @Body() meetup: MeetupCreation) {

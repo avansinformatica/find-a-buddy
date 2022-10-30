@@ -5,11 +5,6 @@ export interface Review {
     
     rating: number;
     text?: string;
-    
-    pupil: Id;
-    tutor: Id;
-
-    datetime: Date;
 }
 
 export interface ReviewCreation {
