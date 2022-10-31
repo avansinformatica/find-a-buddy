@@ -100,6 +100,8 @@ describe('TopicService', () => {
     expect(results.map(t => t.title)).toContain(testTopics[0].title);
     expect(results.map(t => t.title)).toContain(testTopics[1].title);
     expect(results).toHaveLength(2);
+    expect(results[0]).toHaveProperty('_id', undefined);
+    expect(results[0]).toHaveProperty('__v', undefined);
   });
 
   describe('user interaction', () => {

@@ -22,7 +22,7 @@ export class TopicService {
   }
 
   async getAll(): Promise<Topic[]> {
-    return this.topicModel.find();
+    return this.topicModel.find({}, {_id: 0, __v: 0});
   }
 
   async addTopic(userId: string, topic: string, role: Role) {

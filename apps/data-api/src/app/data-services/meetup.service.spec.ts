@@ -122,11 +122,14 @@ describe('UserService', () => {
 
   describe('create', () => {
     it('creates a meetup', async () => {
-      await service.create('mushrooms', new Date(), toad.id, mario.id);
+      const result = await service.create('mushrooms', new Date(), toad.id, mario.id);
 
-      const meetup = await meetupModel.find();
-
-      expect(meetup.map(m => m.topic)).toContain('mushrooms');
+      const meetups = await meetupModel.find();
+      
+      expect(meetups.map(m => m.topic)).toContain('mushrooms');
+      const meetup = meetups.filter(m => m.topic == 'mushrooms')[0];
+      
+      expect(result).toHaveProperty('id', meetup.id);
 
       const updatedToad = await userModel.findOne({id: toad.id});
       const updatedMario = await userModel.findOne({id: mario.id});
@@ -197,6 +200,28 @@ describe('UserService', () => {
       const result = await service.getOne('wrongid', meetupA.id);
       
       expect(result).toStrictEqual(null);
+    });
+  });
+
+  describe('acceptInvite', () => {
+    it('accepts an invitation', async () => {
+      await service.acceptInvite(toad.id, meetupC.id);
+
+      const meetup = await meetupModel.findOne({id: meetupC.id});
+
+      expect(meetup.accepted).toBe(true);
+    });
+
+    it('does not accept when user is not tutor', async () => {
+      await expect(service.acceptInvite(yoshi.id, meetupC.id)).rejects.toThrow();
+
+      const meetup = await meetupModel.findOne({id: meetupC.id});
+
+      expect(meetup.accepted).toBe(false);
+    });
+
+    it('has no effect on nonexistent meetup', async () => {
+      await expect(service.acceptInvite(yoshi.id, 'notameetup')).rejects.toThrow();
     });
   });
 

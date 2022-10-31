@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Meetup } from '@find-a-buddy/data';
+import { Meetup, ResourceId } from '@find-a-buddy/data';
 import { Meetup as MeetupModel, MeetupDocument } from '../schemas/meetup.schema';
 import { User, UserDocument } from '../schemas/user.schema';
 import { TopicService } from './topic.service';
@@ -27,7 +27,7 @@ export class MeetupService {
       .populate('pupil', {id: 1, name: 1, _id: 0});
   }
 
-  async create(topic: string, datetime: Date, tutorUserId: string, pupilUserId: string) {
+  async create(topic: string, datetime: Date, tutorUserId: string, pupilUserId: string): Promise<ResourceId> {
     // await this.topicService.ensureExists(topic);
 
     const tutor = await this.userModel.findOne({id: tutorUserId});
@@ -52,6 +52,8 @@ export class MeetupService {
     pupil.meetups.push(meetup);
 
     await Promise.all([meetup.save(), tutor.save(), pupil.save()]);
+
+    return {id: meetup.id};
   }
 
   async getAll(userId: string): Promise<Meetup[]> {
@@ -74,6 +76,15 @@ export class MeetupService {
       .findOne({$and: [{id: meetupId}, {$or: [{tutor: user._id}, {pupil: user._id}]}]}, {_id: 0, __v: 0})
       .populate('tutor', {id: 1, name: 1, _id: 0})
       .populate('pupil', {id: 1, name: 1, _id: 0});
+  }
+
+  async acceptInvite(userId: string, meetupId: string) {
+    const user = await this.userModel.findOne({id: userId});
+    const result = await this.meetupModel.updateOne({id: meetupId, tutor: user._id}, {accepted: true});
+    
+    if (result.modifiedCount == 0) {
+      throw new Error('not accepted');
+    }
   }
 
   async postReview(userId: string, meetupId: string, text: string, rating: number) {

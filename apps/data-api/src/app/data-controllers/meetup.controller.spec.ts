@@ -20,6 +20,7 @@ describe('TopicController', () => {
           getAll: jest.fn(),
           getOne: jest.fn(),
           postReview: jest.fn(),
+          acceptInvite: jest.fn(),
         },
       }],
     }).compile();
@@ -49,17 +50,18 @@ describe('TopicController', () => {
     it('calls create on the service', async () => {
       const create = jest.spyOn(meetupService, 'create')
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        .mockImplementation(async () => {});
+        .mockImplementation(async () => ({id: 'mid123'}));
 
       const topic = 'mushrooms';
       const time = new Date();
       const pupilId = 'id123';
       const tutorId = 'id456';
 
-      await meetupController.create({id: pupilId, username: 'mario'}, {topic, tutorId, datetime: time});
+      const result = await meetupController.create({id: pupilId, username: 'mario'}, {topic, tutorId, datetime: time});
 
       expect(create).toBeCalledTimes(1);
       expect(create).toBeCalledWith(topic, time, tutorId, pupilId);
+      expect(result).toHaveProperty('id', 'mid123');
     });
 
     it('throws a bad request if meetup is invalid', async () => {
@@ -114,6 +116,36 @@ describe('TopicController', () => {
       expect(getOne).toBeCalledTimes(1);
       expect(getOne).toBeCalledWith('id123', exampleMeetup.id);
       expect(result).toStrictEqual(exampleMeetup);
+    });
+  });
+
+  describe('acceptInvite', () => {
+    it('calls acceptInvite on service', async () => {
+      const acceptInvite = jest.spyOn(meetupService, 'acceptInvite')
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .mockImplementation(async () => {});
+
+      const token = {id: 'uid123', username: 'user123'};
+      const meetupId = 'mid123';
+
+      await meetupController.acceptInvite(token, meetupId);
+
+      expect(acceptInvite).toBeCalledTimes(1);
+      expect(acceptInvite).toBeCalledWith(token.id, meetupId);
+    });
+
+    it('throws a bad request if accept is invalid', async () => {
+      const acceptInvite = jest.spyOn(meetupService, 'acceptInvite')
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        .mockImplementation(async () => {throw new Error('invalid')});
+
+        const token = {id: 'id123', username: 'user123'};
+        const id = 'meetup123';
+
+      await expect(meetupController.acceptInvite(token, id)).rejects.toThrow();
+
+      expect(acceptInvite).toBeCalledTimes(1);
+      expect(acceptInvite).toBeCalledWith(token.id, id);
     });
   });
 

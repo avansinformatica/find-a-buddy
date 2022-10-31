@@ -10,6 +10,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { Topic, TopicSchema } from './schemas/topic.schema';
 import { Meetup, MeetupSchema } from './schemas/meetup.schema';
 import { UserController } from './data-controllers/user.controller';
+import { MeetupController } from './data-controllers/meetup.controller';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UserController } from './data-controllers/user.controller';
       { name: Meetup.name, schema: MeetupSchema }]),
   ],
   controllers: [
+    MeetupController,
     TopicController,
     UserController,
   ],
