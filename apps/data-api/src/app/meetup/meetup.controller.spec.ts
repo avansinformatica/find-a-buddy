@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { MeetupController } from './meetup.controller';
 
-import { MeetupService } from '../data-services/meetup.service';
+import { MeetupService } from './meetup.service';
 
 describe('TopicController', () => {
   let app: TestingModule;

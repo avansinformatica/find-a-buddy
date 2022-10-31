@@ -4,9 +4,9 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Meetup, ResourceId } from '@find-a-buddy/data';
-import { Meetup as MeetupModel, MeetupDocument } from '../schemas/meetup.schema';
-import { User, UserDocument } from '../schemas/user.schema';
-import { TopicService } from './topic.service';
+import { Meetup as MeetupModel, MeetupDocument } from './meetup.schema';
+import { User, UserDocument } from '../user/user.schema';
+import { TopicService } from '../topic/topic.service';
 
 @Injectable()
 export class MeetupService {

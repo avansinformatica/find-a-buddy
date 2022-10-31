@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 
-import { UserService } from '../data-services/user.service';
+import { UserService } from './user.service';
 
 import { UserInfo, User } from '@find-a-buddy/data';
 import { InjectToken, Token } from '../auth/token.decorator';

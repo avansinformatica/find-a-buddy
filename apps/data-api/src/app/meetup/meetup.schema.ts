@@ -3,7 +3,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 
 import { Review, ReviewSchema } from './review.schema';
-import { User } from './user.schema';
+import { User } from '../user/user.schema';
 
 export type MeetupDocument = Meetup & Document;
 

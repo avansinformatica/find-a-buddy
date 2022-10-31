@@ -6,10 +6,10 @@ import { disconnect, Model } from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 import { MeetupService } from './meetup.service';
-import { User, UserDocument, UserSchema } from '../schemas/user.schema';
-import { Meetup, MeetupDocument, MeetupSchema } from '../schemas/meetup.schema';
-import { Topic, TopicDocument, TopicSchema } from '../schemas/topic.schema';
-import { TopicService } from './topic.service';
+import { User, UserDocument, UserSchema } from '../user/user.schema';
+import { Meetup, MeetupDocument, MeetupSchema } from './meetup.schema';
+import { Topic, TopicDocument, TopicSchema } from '../topic/topic.schema';
+import { TopicService } from '../topic/topic.service';
 
 describe('UserService', () => {
   let service: MeetupService;

@@ -8,8 +8,8 @@ import { disconnect } from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 import { AuthService } from './auth.service';
-import { Identity, IdentitySchema } from '../schemas/identity.schema';
-import { User, UserSchema } from '../schemas/user.schema';
+import { Identity, IdentitySchema } from './identity.schema';
+import { User, UserSchema } from '../user/user.schema';
 
 describe('AuthService', () => {
   let service: AuthService;

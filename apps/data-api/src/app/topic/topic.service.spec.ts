@@ -6,8 +6,8 @@ import { Model, disconnect } from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 import { TopicService } from './topic.service';
-import { Topic, TopicSchema, TopicDocument } from '../schemas/topic.schema';
-import { User, UserSchema, UserDocument } from '../schemas/user.schema';
+import { Topic, TopicSchema, TopicDocument } from './topic.schema';
+import { User, UserSchema, UserDocument } from '../user/user.schema';
 
 describe('TopicService', () => {
   let service: TopicService;

@@ -6,8 +6,8 @@ import { disconnect, Model } from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 import { UserService } from './user.service';
-import { User, UserDocument, UserSchema } from '../schemas/user.schema';
-import { Meetup, MeetupDocument, MeetupSchema } from '../schemas/meetup.schema';
+import { User, UserDocument, UserSchema } from './user.schema';
+import { Meetup, MeetupDocument, MeetupSchema } from '../meetup/meetup.schema';
 
 describe('UserService', () => {
   let service: UserService;

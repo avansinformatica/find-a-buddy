@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 
-import { MeetupService } from '../data-services/meetup.service';
+import { MeetupService } from './meetup.service';
 
 import { Meetup, MeetupCreation, ResourceId, Review } from '@find-a-buddy/data';
 import { InjectToken, Token } from '../auth/token.decorator';

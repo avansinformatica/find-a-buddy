@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 
-import { Meetup } from './meetup.schema';
+import { Meetup } from '../meetup/meetup.schema';
 
 export type UserDocument = User & Document;
 

@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Topic, TopicDocument } from '../schemas/topic.schema';
-import { User, UserDocument } from '../schemas/user.schema';
+import { Topic, TopicDocument } from '../topic/topic.schema';
+import { User, UserDocument } from '../user/user.schema';
 import { Role } from '@find-a-buddy/data';
 
 @Injectable()
