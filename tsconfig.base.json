@@ -15,7 +15,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@find-a-buddy/data": ["libs/data/src/index.ts"]
+      "@find-a-buddy/auth-ui": ["libs/auth-ui/src/index.ts"],
+      "@find-a-buddy/data": ["libs/data/src/index.ts"],
+      "@find-a-buddy/entity-ui": ["libs/entity-ui/src/index.ts"],
+      "@find-a-buddy/features-ui": ["libs/features-ui/src/index.ts"],
+      "@find-a-buddy/util-ui": ["libs/util-ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
