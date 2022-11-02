@@ -29,7 +29,7 @@ export class UserService {
             input: {$filter: {
               input: '$meetups', 
               as: 'meetup',
-              cond: {$and: [{$eq: ['$$meetup.tutor', '$$user']}, {$gt: ['$$meetup.review', null]}]}
+              cond: {$and: [{$eq: ['$$meetup.tutorRef', '$$user']}, {$gt: ['$$meetup.review', null]}]}
             }},
             as: 'meetup',
             in: {

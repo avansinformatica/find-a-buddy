@@ -91,10 +91,34 @@ describe('UserService', () => {
     const user2 = new userModel(testUsers[1]);
     const user3 = new userModel(testUsers[2]);
 
-    const meetup1 = new meetupModel({...testMeetups[0], tutorRef: user1._id, pupilRef: user2._id});
-    const meetup2 = new meetupModel({...testMeetups[1], tutorRef: user3._id, pupilRef: user1._id});
-    const meetup3 = new meetupModel({...testMeetups[2], tutorRef: user1._id, pupilRef: user2._id});
-    const meetup4 = new meetupModel({...testMeetups[3], tutorRef: user1._id, pupilRef: user2._id});
+    const meetup1 = new meetupModel({
+      ...testMeetups[0], 
+      tutorRef: user1._id, 
+      pupilRef: user2._id,
+      tutor: {id: user1.id, name: user1.name},
+      pupil: {id: user2.id, name: user2.name},
+    });
+    const meetup2 = new meetupModel({
+      ...testMeetups[1], 
+      tutorRef: user3._id, 
+      pupilRef: user1._id,
+      tutor: {id: user3.id, name: user3.name},
+      pupil: {id: user1.id, name: user1.name},
+    });
+    const meetup3 = new meetupModel({
+      ...testMeetups[2], 
+      tutorRef: user1._id, 
+      pupilRef: user2._id,
+      tutor: {id: user1.id, name: user1.name},
+      pupil: {id: user2.id, name: user2.name},
+    });
+    const meetup4 = new meetupModel({
+      ...testMeetups[3], 
+      tutorRef: user1._id, 
+      pupilRef: user2._id,
+      tutor: {id: user1.id, name: user3.name},
+      pupil: {id: user2.id, name: user1.name},
+    });
 
     user1.meetups.push(meetup1);
     user1.meetups.push(meetup2);
@@ -114,7 +138,7 @@ describe('UserService', () => {
     await mongod.stop();
   });
 
-  xdescribe('getAll', () => {
+  describe('getAll', () => {
     it('should retrieve all users', async () => {
       const results = await service.getAll();
   
