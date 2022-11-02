@@ -1,6 +1,6 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 
-import { ResourceId, UserCredentials, UserRegistration } from '@find-a-buddy/data';
+import { ResourceId, Token, UserCredentials, UserRegistration } from '@find-a-buddy/data';
 
 import { AuthService } from './auth.service';
 
@@ -22,9 +22,11 @@ export class AuthController {
     }
 
     @Post('login')
-    async login(@Body() credentials: UserCredentials): Promise<string> {
+    async login(@Body() credentials: UserCredentials): Promise<Token> {
         try {
-            return await this.authService.generateToken(credentials.username, credentials.password);
+            return {
+                token: await this.authService.generateToken(credentials.username, credentials.password)
+            };
         } catch (e) {
             throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         }

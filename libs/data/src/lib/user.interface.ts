@@ -19,12 +19,3 @@ export interface UserInfo extends UserIdentity {
 export interface User extends UserInfo {
     reviews: Review[];
 }
-
-export interface UserCredentials {
-    username: string;
-    password: string;
-}
-
-export interface UserRegistration extends UserCredentials {
-    emailAddress: string
-}

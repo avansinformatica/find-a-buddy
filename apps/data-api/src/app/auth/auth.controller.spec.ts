@@ -1,3 +1,4 @@
+import { Token } from '@find-a-buddy/data';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AuthController } from './auth.controller';
@@ -73,13 +74,13 @@ describe('AuthController', () => {
         username: 'henk',
         password: 'supersecret123',
       };
-      const mockedToken = 'mockedToken';
+      const mockedToken: Token = {token: 'mockedToken'};
 
       const register = jest.spyOn(authService, 'generateToken')
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .mockImplementation(async (_u: string, _p: string) => {return mockedToken;});
+        .mockImplementation(async (_u: string, _p: string) => {return mockedToken.token;});
 
-      expect(await authController.login(exampleUser)).toBe(mockedToken);
+      expect(await authController.login(exampleUser)).toStrictEqual(mockedToken);
 
       expect(register).toHaveBeenCalledWith(exampleUser.username, exampleUser.password);
     });

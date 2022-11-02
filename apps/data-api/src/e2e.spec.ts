@@ -111,7 +111,7 @@ describe('end-to-end tests of data API', () => {
   
       expect(login.status).toBe(201);
   
-      const token = login.text;
+      const token = login.body.token;
   
       const meetups = await request(server)
         .get('/data-api/meetup')
@@ -138,7 +138,7 @@ describe('end-to-end tests of data API', () => {
   
       expect(login.status).toBe(201);
   
-      const token = login.text;
+      const token = login.body.token;
       
       const setPupilTopic = await request(server)
         .post('/data-api/topic')
@@ -286,9 +286,9 @@ describe('end-to-end tests of data API', () => {
       
       expect(loginC.status).toBe(201);
       
-      const tokenA = loginA.text;
-      const tokenB = loginB.text;
-      const tokenC = loginC.text;
+      const tokenA = loginA.body.token;
+      const tokenB = loginB.body.token;
+      const tokenC = loginC.body.token;
       const idA = registerA.body.id;
       const idB = registerB.body.id;
       const idC = registerC.body.id;
@@ -478,8 +478,8 @@ describe('end-to-end tests of data API', () => {
       
       expect(loginB.status).toBe(201);
       
-      const tokenA = loginA.text;
-      const tokenB = loginB.text;
+      const tokenA = loginA.body.token;
+      const tokenB = loginB.body.token;
 
       const getUserListA = await request(server)
         .get('/data-api/user')
