@@ -66,12 +66,16 @@ describe('MeetupService', () => {
     meetupA = new meetupModel({
       tutorRef: mario._id,
       pupilRef: luigi._id,
+      tutor: {name: mario.name, id: mario.id},
+      pupil: {name: luigi.name, id: luigi.id},
       topic: 'coins',
       datetime: Date.now(),
     });
     meetupB = new meetupModel({
       tutorRef: yoshi._id,
       pupilRef: toad._id,
+      tutor: {name: yoshi.name, id: yoshi.id},
+      pupil: {name: toad.name, id: toad.id},
       topic: 'coins',
       datetime: Date.now(),
       accepted: true,
@@ -79,6 +83,8 @@ describe('MeetupService', () => {
     meetupC = new meetupModel({
       tutorRef: toad._id,
       pupilRef: yoshi._id,
+      tutor: {name: toad.name, id: toad.id},
+      pupil: {name: yoshi.name, id: yoshi.id},
       topic: 'tubes',
       datetime: Date.now(),
     });

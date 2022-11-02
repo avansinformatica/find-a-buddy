@@ -46,6 +46,8 @@ export class MeetupService {
       topic,
       tutorRef: tutor._id,
       pupilRef: pupil._id,
+      tutor: {id: tutor.id, name: tutor.name},
+      pupil: {id: pupil.id, name: pupil.name},
     });
 
     tutor.meetups.push(meetup);

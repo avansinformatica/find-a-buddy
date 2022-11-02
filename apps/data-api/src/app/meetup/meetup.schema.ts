@@ -35,7 +35,7 @@ export class Meetup {
   })
   tutorRef: User;
 
-  @Prop({required: true})
+  @Prop({required: true, type: {id: String, name: String}})
   tutor: UserInfo;
 
   @Prop({
@@ -46,7 +46,7 @@ export class Meetup {
   })
   pupilRef: User;
 
-  @Prop({required: true})
+  @Prop({required: true, type: {id: String, name: String}})
   pupil: UserInfo;
 }
 
