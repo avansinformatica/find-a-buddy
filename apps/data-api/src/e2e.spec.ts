@@ -48,7 +48,7 @@ export class TestAppModule {
   }
 }
 
-xdescribe('end-to-end tests of data API', () => {
+describe('end-to-end tests of data API', () => {
   let app: INestApplication;
   let server;
   let module: TestingModule; 
@@ -410,8 +410,6 @@ xdescribe('end-to-end tests of data API', () => {
       const checkUserDetail = await request(server)
         .get(`/data-api/user/${idB}`)
         .set('authorization', tokenC);
-
-      console.log(checkUserDetail.body)
 
       expect(checkUserDetail.status).toBe(200);
       expect(checkUserDetail.body).toHaveProperty('name', credsB.username);

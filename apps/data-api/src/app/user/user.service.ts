@@ -61,39 +61,35 @@ export class UserService {
         foreignField: '_id',
         as: 'meetups',
       }},
-      {$unwind: {path: '$meetups', preserveNullAndEmptyArrays: true}},
-      {$match: {
-        $expr: {$eq: ['$_id', '$meetups.tutorRef']},
-      }},
-      {$match: {
-        $expr: {$gt: ['$meetups.review', null]},
-      }},
-      {$match: {
-        'meetups.accepted': true,
+      {$addFields: {
+        reviews: {$let: {
+          vars: {user: '$_id'},
+          in: {$map: {
+            input: {$filter: {
+              input: '$meetups', 
+              as: 'meetup',
+              cond: {$and: [{$eq: ['$$meetup.tutorRef', '$$user']}, {$gt: ['$$meetup.review', null]}]}
+            }},
+            as: 'meetup',
+            in: {
+              rating: '$$meetup.review.rating',
+              id: '$$meetup.id',
+              topic: '$$meetup.topic',
+              datetime: '$$meetup.datetime',
+              text: '$$meetup.review.text',
+              tutor: '$$meetup.tutor',
+              pupil: '$$meetup.pupil',
+            },
+          }},
+        }},
       }},
       {$addFields: {
-        reviews: '$meetups.review',
-      }},
-      {$addFields: {
-        'reviews.id': '$meetups.id',
-        'reviews.datetime': '$meetups.datetime',
-        'reviews.topic': '$meetups.topic',
-        'reviews.tutor': '$meetups.tutor',
-        'reviews.pupil': '$meetups.pupil',
-      }},
-      {$group: {
-        _id: '$id',
-        id: {$first: '$id'},
-        name: {$first: '$name'},
-        tutorTopics: {$first: '$tutorTopics'},
-        pupilTopics: {$first: '$pupilTopics'},
         rating: {$avg: '$reviews.rating'},
-        reviews: {$push: '$reviews'},
       }},
       {$project: {
         _id: 0,
         __v: 0,
-        'reviews._id': 0,
+        meetups: 0,
         'reviews.tutor._id': 0,
         'reviews.pupil._id': 0,
       }},

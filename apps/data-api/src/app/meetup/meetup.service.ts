@@ -22,9 +22,7 @@ export class MeetupService {
     if (user == null) return [];
 
     return this.meetupModel
-      .find({tutorRef: user._id, accepted: false}, {_id: 0, __v: 0})
-      .populate('tutorRef', {id: 1, name: 1, _id: 0})
-      .populate('pupilRef', {id: 1, name: 1, _id: 0});
+      .find({tutorRef: user._id, accepted: false}, {_id: 0, __v: 0, tutorRef: 0, pupilRef: 0, 'tutor._id': 0, 'pupil._id': 0});
   }
 
   async create(topic: string, datetime: Date, tutorUserId: string, pupilUserId: string): Promise<ResourceId> {
@@ -64,9 +62,10 @@ export class MeetupService {
     if (user == null) return [];
 
     return this.meetupModel
-      .find({$or: [{tutorRef: user._id, accepted: true}, {pupilRef: user._id}]}, {_id: 0, __v: 0, "review._id": 0, "review.__v": 0})
-      .populate('tutorRef', {id: 1, name: 1, _id: 0})
-      .populate('pupilRef', {id: 1, name: 1, _id: 0});
+      .find({$or: [{tutorRef: user._id, accepted: true}, {pupilRef: user._id}]}, 
+        {_id: 0, __v: 0, "review._id": 0, "review.__v": 0, tutorRef: 0, pupilRef: 0, 'tutor._id': 0, 'pupil._id': 0});
+      // .populate('tutorRef', {id: 1, name: 1, _id: 0})
+      // .populate('pupilRef', {id: 1, name: 1, _id: 0});
   }
 
   async getOne(userId: string, meetupId: string): Promise<Meetup | null> {
@@ -75,9 +74,8 @@ export class MeetupService {
     if (user == null) return null;
 
     return this.meetupModel
-      .findOne({$and: [{id: meetupId}, {$or: [{tutorRef: user._id}, {pupilRef: user._id}]}]}, {_id: 0, __v: 0, "review._id": 0, "review.__v": 0})
-      .populate('tutorRef', {id: 1, name: 1, _id: 0})
-      .populate('pupilRef', {id: 1, name: 1, _id: 0});
+      .findOne({$and: [{id: meetupId}, {$or: [{tutorRef: user._id}, {pupilRef: user._id}]}]}, 
+        {_id: 0, __v: 0, "review._id": 0, "review.__v": 0, tutorRef: 0, pupilRef: 0, 'tutor._id': 0, 'pupil._id': 0});
   }
 
   async acceptInvite(userId: string, meetupId: string) {
