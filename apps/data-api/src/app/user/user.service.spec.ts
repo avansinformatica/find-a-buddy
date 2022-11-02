@@ -167,7 +167,7 @@ describe('UserService', () => {
     });
   });
 
-  xdescribe('getOne', () => {
+  describe('getOne', () => {
     it('should retrieve a specific user', async () => {
       const result = await service.getOne('jan123');
 

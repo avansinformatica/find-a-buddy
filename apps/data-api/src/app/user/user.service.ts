@@ -51,14 +51,7 @@ export class UserService {
   }
 
   async getOne(userId: string): Promise<User | null> {
-    // const user = await this.userModel.findOne({id: userId});
-
     const users = await this.userModel.aggregate([
-      // {$match: {
-      //   'tutor': user._id
-      // }},
-      // {match}
-
       {$match: {
         id: userId,
       }},
@@ -70,7 +63,7 @@ export class UserService {
       }},
       {$unwind: {path: '$meetups', preserveNullAndEmptyArrays: true}},
       {$match: {
-        $expr: {$eq: ['$_id', '$meetups.tutor']},
+        $expr: {$eq: ['$_id', '$meetups.tutorRef']},
       }},
       {$match: {
         $expr: {$gt: ['$meetups.review', null]},
@@ -78,35 +71,15 @@ export class UserService {
       {$match: {
         'meetups.accepted': true,
       }},
-      {$lookup: {
-        from: 'users',
-        localField: 'meetups.tutor',
-        foreignField: '_id',
-        as: 'meetups.tutor',
-      }},
-      {$unwind: {path: '$meetups.tutor'}},
-      {$lookup: {
-        from: 'users',
-        localField: 'meetups.pupil',
-        foreignField: '_id',
-        as: 'meetups.pupil',
-      }},
-      {$unwind: {path: '$meetups.pupil'}},
       {$addFields: {
         reviews: '$meetups.review',
       }},
       {$addFields: {
-        'reviews.topic': '$meetups.topic',
+        'reviews.id': '$meetups.id',
         'reviews.datetime': '$meetups.datetime',
-        'reviews.tutor': {id: '$meetups.tutor.id', name: '$meetups.tutor.name'},
-        'reviews.pupil': {id: '$meetups.pupil.id', name: '$meetups.pupil.name'},
-        'reviews.text': '$meetups.review.text',
-        'reviews.rating': '$meetups.review.rating',
-      }},
-      {$project: {
-        _id: 0,
-        __v: 0,
-        meetups: 0,
+        'reviews.topic': '$meetups.topic',
+        'reviews.tutor': '$meetups.tutor',
+        'reviews.pupil': '$meetups.pupil',
       }},
       {$group: {
         _id: '$id',
@@ -117,51 +90,15 @@ export class UserService {
         rating: {$avg: '$reviews.rating'},
         reviews: {$push: '$reviews'},
       }},
-
-      // {$project: {
-      //   reviews: '$meetups',
-      // }},
-      // {$lookup: {
-      //   from: 'users',
-      //   localField: 'meetups.tutor',
-      //   foreignField: '_id',
-      //   as: 'meetups.tutor'
-      // }},
-      // {$addFields: {
-      //   reviews: {$let: {
-      //     vars: {user: '$_id'},
-      //     in: {$map: {
-      //       input: {$filter: {
-      //         input: '$meetups', 
-      //         as: 'meetup',
-      //         cond: {$and: [{$eq: ['$$meetup.tutor', '$$user']}, {$gt: ['$$meetup.review', null]}]}
-      //       }},
-      //       as: 'meetup',
-      //       in: {
-      //         id: '$$meetup.id',
-      //         pupil: '$$meetup.pupil',
-      //         tutor: '$$meetup.tutor',
-      //         topic: '$$meetup.topic',
-      //         datetime: '$$meetup.datetime',
-      //         rating: '$$meetup.review.rating',
-      //         text: '$$meetup.review.text',
-      //       },
-      //     }},
-      //   }},
-      // }},
-      // {$addFields: {
-      //   rating: {$avg: '$reviews.rating'},
-      // }},
-      // {$project: {
-      //   _id: 0,
-      //   __v: 0,
-      //   meetups: 0,
-      // }},
+      {$project: {
+        _id: 0,
+        __v: 0,
+        'reviews._id': 0,
+        'reviews.tutor._id': 0,
+        'reviews.pupil._id': 0,
+      }},
     ]);
 
-    console.log(users)
-
-    // return {...user, reviews};
     return users[0];
   }
 }
