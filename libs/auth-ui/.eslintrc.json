@@ -21,7 +21,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "find-a-buddy",
+            "prefix": "fab",
             "style": "kebab-case"
           }
         ]

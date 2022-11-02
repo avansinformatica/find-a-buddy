@@ -1,19 +1,21 @@
-import { Id } from "./id.type";
-import { Review } from "./review.interface";
+import { Id } from './id.type'
+import { Review } from './review.interface'
 
 export interface UserIdentity {
-    id: Id;
-    name: string;
+    id: Id
+    name: string
 }
 
 export interface UserInfo extends UserIdentity {
+    rating: number
+    isActive: boolean
+    emailAdress: string
+    roles: string[]
 
-    rating: number;
-
-    pupilTopics: string[];
-    tutorTopics: string[];
+    pupilTopics: string[]
+    tutorTopics: string[]
 }
 
 export interface User extends UserInfo {
-    reviews: Review[];
+    reviews: Review[]
 }

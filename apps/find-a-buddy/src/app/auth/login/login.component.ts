@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IUser, ILoginFormData } from '@cswp/api-interfaces';
-import { AuthService } from '@cswp/auth';
+import { UserIdentity, UserInfo, UserLogin } from '@find-a-buddy/data';
+import { AuthService } from '@find-a-buddy/auth-ui';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subs = this.authService
       .getUserFromLocalStorage()
-      .subscribe((user: IUser | undefined) => {
+      .subscribe((user: UserInfo | undefined) => {
         if (user) {
           console.log('User already logged in > to dashboard');
           this.router.navigate(['/']);
@@ -30,14 +30,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFormSubmitted(formData: ILoginFormData): void {
-    console.log(formData.emailAdress, formData.password);
-    this.authService.login(formData).subscribe((user: IUser | undefined) => {
-      if (user) {
-        console.log('Logged in');
-        this.router.navigate(['/']);
-      }
-      // this.submitted = false
-    });
+  onFormSubmitted(formData: UserLogin): void {
+    console.log(formData.name, formData.password);
+    this.authService
+      .login(formData)
+      .subscribe((user: UserIdentity | undefined) => {
+        if (user) {
+          console.log('Logged in');
+          this.router.navigate(['/']);
+        }
+        // this.submitted = false
+      });
   }
 }

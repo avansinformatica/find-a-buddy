@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ILoginFormData } from '@cswp/api-interfaces';
+import { UserLogin } from '@find-a-buddy/data';
 
 @Component({
   selector: 'fab-auth-login-form',
@@ -8,11 +8,15 @@ import { ILoginFormData } from '@cswp/api-interfaces';
 })
 export class LoginFormComponent implements OnInit {
   loginForm!: FormGroup;
-  @Output() formSubmitted = new EventEmitter<ILoginFormData>();
+  @Output() formSubmitted = new EventEmitter<UserLogin>();
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
-      email: new FormControl(null, [Validators.required, Validators.email]),
+      // email: new FormControl(null, [Validators.required, Validators.email]),
+      name: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(5),
+      ]),
       password: new FormControl(null, [
         Validators.required,
         Validators.minLength(3),
@@ -22,8 +26,9 @@ export class LoginFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const loginFormData: ILoginFormData = {
-        emailAdress: this.loginForm.value.email,
+      const loginFormData: UserLogin = {
+        // emailAdress: this.loginForm.value.email,
+        name: this.loginForm.value.name,
         password: this.loginForm.value.password,
       };
       this.formSubmitted.emit(loginFormData);

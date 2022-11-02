@@ -2,24 +2,21 @@
  *
  */
 
-import { Allergenes, IMeal, IUser } from '@cswp/api-interfaces'
-import { IEntity } from '@cswp/entity'
+import { UserInfo } from '@find-a-buddy/data';
+import { IEntity } from '@find-a-buddy/entity-ui';
 
-export class Meal implements IMeal, IEntity {
-  readonly id = 0
-  name = ''
-  description = ''
-  isActive = false
-  isVega = false
-  isVegan = false
-  isToTakeHome = false
-  dateTime = new Date()
-  readonly createDate = undefined
-  readonly updateDate = undefined
-  imageUrl = ''
-  allergenes: Allergenes[] = []
-  maxAmountOfParticipants = 0
-  price = 0.0
-  readonly cook?: IUser
-  readonly participants: IUser[] | undefined = []
+export class Meal implements IEntity {
+  readonly id = 0;
+  name = '';
+  description = '';
+  isActive = false;
+  isVega = false;
+  isVegan = false;
+  isToTakeHome = false;
+  dateTime = new Date();
+  readonly createDate = undefined;
+  readonly updateDate = undefined;
+  imageUrl = '';
+  readonly cook?: any;
+  readonly participants: any;
 }

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AuthService } from '@cswp/auth';
+import { AuthService } from '@find-a-buddy/auth-ui';
 import { Meal } from '../meal.model';
 
 @Component({

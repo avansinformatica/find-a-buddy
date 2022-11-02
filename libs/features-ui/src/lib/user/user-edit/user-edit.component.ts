@@ -11,8 +11,8 @@ import {
   map,
 } from 'rxjs/operators';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
-import { Alert, AlertService } from '@cswp/util';
-import { IUser } from '@cswp/api-interfaces';
+import { Alert, AlertService } from '@find-a-buddy/util-ui';
+import { UserInfo } from '@find-a-buddy/data';
 import { UserService } from '../user.service';
 
 @Component({
@@ -21,7 +21,7 @@ import { UserService } from '../user.service';
 })
 export class UserEditComponent implements OnInit, OnDestroy {
   title = '';
-  user!: IUser;
+  user!: UserInfo;
   userid!: number | undefined;
   httpOptions: any;
   debug = false;
@@ -45,14 +45,14 @@ export class UserEditComponent implements OnInit, OnDestroy {
         switchMap((params: ParamMap) => {
           // als we een nieuw item maken is er geen 'id'
           if (!params.get('id')) {
-            return of({} as IUser);
+            return of({} as UserInfo);
           } else {
             return this.userService.read(params.get('id'));
           }
         }),
         tap(console.log)
       )
-      .subscribe((user: IUser) => {
+      .subscribe((user: UserInfo) => {
         this.user = user;
       });
   }

@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '@cswp/auth';
-import { Alert, AlertService } from '@cswp/util';
+import { AuthService } from '@find-a-buddy/auth-ui';
+import { Alert, AlertService } from '@find-a-buddy/util-ui';
 import { EntityService, IEntity } from '..';
 
 @Component({

@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { of, Subscription } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
-import { AuthService } from '@cswp/auth';
-import { Alert, AlertService } from '@cswp/util';
+import { AuthService } from '@find-a-buddy/auth-ui';
+import { Alert, AlertService } from '@find-a-buddy/util-ui';
 import { EntityService, IEntity } from '..';
 
 @Component({

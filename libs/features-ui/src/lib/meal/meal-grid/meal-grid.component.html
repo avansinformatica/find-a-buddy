@@ -28,7 +28,7 @@
 <div #collapse="ngbCollapse" [(ngbCollapse)]="filtersAreaIsCollapsed">
   <div class="card">
     <div class="card-body">
-      <!-- <cswp-filter></cswp-filter> -->
+      <!-- <fab-filter></fab-filter> -->
       <h2>Test</h2>
     </div>
   </div>
@@ -41,10 +41,10 @@
   <div id="moviesgrid" class="row">
     <div *ngFor="let meal of items" class="col-md-4 col-sm-6 py-4">
       <!-- Card -->
-      <cswp-feature-meal-card
+      <fab-feature-meal-card
         [meal]="meal"
         (delete)="delete($event)"
-      ></cswp-feature-meal-card>
+      ></fab-feature-meal-card>
       <!-- Card end -->
     </div>
   </div>
@@ -52,6 +52,6 @@
 <ng-template #elseBlock>
   <!-- Content to render when condition is false. -->
   <div class="row">
-    <cswp-util-spinner></cswp-util-spinner>
+    <fab-util-spinner></fab-util-spinner>
   </div>
 </ng-template>

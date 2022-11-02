@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '@cswp/auth';
-import { BaseEditComponent } from '@cswp/entity';
-import { AlertService } from '@cswp/util';
+import { AuthService } from '@find-a-buddy/auth-ui';
+import { BaseEditComponent } from '@find-a-buddy/entity-ui';
+import { AlertService } from '@find-a-buddy/util-ui';
 import { Meal } from '../meal.model';
 import { MealService } from '../meal.service';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { UserIdentity, UserInfo } from '@find-a-buddy/data';
+import { UserIdentity, UserInfo, UserLogin } from '@find-a-buddy/data';
 import { Router } from '@angular/router';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { AlertService, ConfigService } from '@find-a-buddy/util-ui';
@@ -47,7 +47,7 @@ export class AuthService {
       .subscribe(() => console.log('Startup auth done'));
   }
 
-  login(formData: UserIdentity): Observable<UserIdentity | undefined> {
+  login(formData: UserLogin): Observable<UserIdentity | undefined> {
     console.log(
       `login at ${this.configService.getConfig().apiEndpoint}auth/login`
     );

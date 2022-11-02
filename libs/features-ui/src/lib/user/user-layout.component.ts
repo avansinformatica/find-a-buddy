@@ -15,7 +15,7 @@ import { Component } from '@angular/core';
         <button class="btn btn-primary">
           <a routerLink="/users/new">Nieuw</a>
         </button>
-        <cswp-user-list></cswp-user-list>
+        <fab-user-list></fab-user-list>
       </div>
       <div class="col">
         <button class="btn btn-primary"><a routerLink="edit">Edit</a></button>

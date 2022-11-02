@@ -6,13 +6,13 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { IUser } from '@cswp/api-interfaces';
+import { UserInfo } from '@find-a-buddy/data';
 
 /**
  *
  */
-interface IUserFormGroup extends FormGroup {
-  value: IUser;
+interface UserInfoFormGroup extends FormGroup {
+  value: UserInfo;
   controls: {
     firstName: AbstractControl;
     lastName: AbstractControl;
@@ -35,8 +35,8 @@ interface IUserFormGroup extends FormGroup {
   templateUrl: './register-form.component.html',
 })
 export class RegisterFormComponent implements OnInit {
-  registerForm!: IUserFormGroup;
-  @Output() formSubmitted = new EventEmitter<IUser>();
+  registerForm!: FormGroup;
+  @Output() formSubmitted = new EventEmitter<UserInfo>();
 
   constructor(private formBuilder: FormBuilder) {}
 
@@ -52,12 +52,12 @@ export class RegisterFormComponent implements OnInit {
         Validators.required,
         Validators.minLength(3),
       ]),
-    }) as IUserFormGroup;
+    }) as FormGroup;
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      const registeredUser: IUser = this.registerForm.value;
+      const registeredUser: UserInfo = this.registerForm.value;
       this.formSubmitted.emit(registeredUser);
     } else {
       console.error('registerForm invalid');

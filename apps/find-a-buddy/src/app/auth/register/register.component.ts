@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IUser } from '@cswp/api-interfaces';
-import { AuthService } from '@cswp/auth';
+import { UserInfo } from '@find-a-buddy/data';
+import { AuthService } from '@find-a-buddy/auth-ui';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,7 +16,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subs = this.authService
       .getUserFromLocalStorage()
-      .subscribe((user: IUser | undefined) => {
+      .subscribe((user: UserInfo | undefined) => {
         if (user) {
           console.log('User already logged in > to dashboard');
           this.router.navigate(['/']);
@@ -30,10 +30,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFormSubmitted(registeredUser: IUser): void {
+  onFormSubmitted(registeredUser: UserInfo): void {
     this.authService
       .register(registeredUser)
-      .subscribe((user: IUser | undefined) => {
+      .subscribe((user: UserInfo | undefined) => {
         if (user) {
           console.log('user = ', user);
           this.router.navigate(['/']);

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { AuthService } from '@cswp/auth';
-import { BaseListComponent } from '@cswp/entity';
-import { AlertService } from '@cswp/util';
+import { AuthService } from '@find-a-buddy/auth-ui';
+import { BaseListComponent } from '@find-a-buddy/entity-ui';
+import { AlertService } from '@find-a-buddy/util-ui';
 import { Meal } from '../meal.model';
 import { MealService } from '../meal.service';
 
