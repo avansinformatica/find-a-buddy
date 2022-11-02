@@ -11,7 +11,7 @@ import { Meetup, MeetupDocument, MeetupSchema } from './meetup.schema';
 import { Topic, TopicDocument, TopicSchema } from '../topic/topic.schema';
 import { TopicService } from '../topic/topic.service';
 
-describe('UserService', () => {
+describe('MeetupService', () => {
   let service: MeetupService;
   let mongod: MongoMemoryServer;
   let mongoc: MongoClient;
@@ -64,21 +64,21 @@ describe('UserService', () => {
     toad = new userModel({name: 'toad', tutorTopics: ['tubes', 'mushrooms'], pupilTopics: ['coins']});
 
     meetupA = new meetupModel({
-      tutor: mario._id,
-      pupil: luigi._id,
+      tutorRef: mario._id,
+      pupilRef: luigi._id,
       topic: 'coins',
       datetime: Date.now(),
     });
     meetupB = new meetupModel({
-      tutor: yoshi._id,
-      pupil: toad._id,
+      tutorRef: yoshi._id,
+      pupilRef: toad._id,
       topic: 'coins',
       datetime: Date.now(),
       accepted: true,
     });
     meetupC = new meetupModel({
-      tutor: toad._id,
-      pupil: yoshi._id,
+      tutorRef: toad._id,
+      pupilRef: yoshi._id,
       topic: 'tubes',
       datetime: Date.now(),
     });

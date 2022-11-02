@@ -22,9 +22,9 @@ export class MeetupService {
     if (user == null) return [];
 
     return this.meetupModel
-      .find({tutor: user._id, accepted: false}, {_id: 0, __v: 0})
-      .populate('tutor', {id: 1, name: 1, _id: 0})
-      .populate('pupil', {id: 1, name: 1, _id: 0});
+      .find({tutorRef: user._id, accepted: false}, {_id: 0, __v: 0})
+      .populate('tutorRef', {id: 1, name: 1, _id: 0})
+      .populate('pupilRef', {id: 1, name: 1, _id: 0});
   }
 
   async create(topic: string, datetime: Date, tutorUserId: string, pupilUserId: string): Promise<ResourceId> {
@@ -44,8 +44,8 @@ export class MeetupService {
     const meetup = new this.meetupModel({
       datetime,
       topic,
-      tutor: tutor._id,
-      pupil: pupil._id,
+      tutorRef: tutor._id,
+      pupilRef: pupil._id,
     });
 
     tutor.meetups.push(meetup);
@@ -62,9 +62,9 @@ export class MeetupService {
     if (user == null) return [];
 
     return this.meetupModel
-      .find({$or: [{tutor: user._id, accepted: true}, {pupil: user._id}]}, {_id: 0, __v: 0})
-      .populate('tutor', {id: 1, name: 1, _id: 0})
-      .populate('pupil', {id: 1, name: 1, _id: 0});
+      .find({$or: [{tutorRef: user._id, accepted: true}, {pupilRef: user._id}]}, {_id: 0, __v: 0, "review._id": 0, "review.__v": 0})
+      .populate('tutorRef', {id: 1, name: 1, _id: 0})
+      .populate('pupilRef', {id: 1, name: 1, _id: 0});
   }
 
   async getOne(userId: string, meetupId: string): Promise<Meetup | null> {
@@ -73,14 +73,14 @@ export class MeetupService {
     if (user == null) return null;
 
     return this.meetupModel
-      .findOne({$and: [{id: meetupId}, {$or: [{tutor: user._id}, {pupil: user._id}]}]}, {_id: 0, __v: 0})
-      .populate('tutor', {id: 1, name: 1, _id: 0})
-      .populate('pupil', {id: 1, name: 1, _id: 0});
+      .findOne({$and: [{id: meetupId}, {$or: [{tutorRef: user._id}, {pupilRef: user._id}]}]}, {_id: 0, __v: 0, "review._id": 0, "review.__v": 0})
+      .populate('tutorRef', {id: 1, name: 1, _id: 0})
+      .populate('pupilRef', {id: 1, name: 1, _id: 0});
   }
 
   async acceptInvite(userId: string, meetupId: string) {
     const user = await this.userModel.findOne({id: userId});
-    const result = await this.meetupModel.updateOne({id: meetupId, tutor: user._id}, {accepted: true});
+    const result = await this.meetupModel.updateOne({id: meetupId, tutorRef: user._id}, {accepted: true});
     
     if (result.modifiedCount == 0) {
       throw new Error('not accepted');
@@ -88,9 +88,9 @@ export class MeetupService {
   }
 
   async postReview(userId: string, meetupId: string, text: string, rating: number) {
-    const meetup = await this.meetupModel.findOne({id: meetupId}).populate('pupil');
+    const meetup = await this.meetupModel.findOne({id: meetupId}).populate('pupilRef');
 
-    if (meetup.pupil.id != userId) throw new Error('user not authorized');
+    if (meetup.pupilRef.id != userId) throw new Error('user not authorized');
 
     if (meetup.review) throw new Error('already reviewed');
 
