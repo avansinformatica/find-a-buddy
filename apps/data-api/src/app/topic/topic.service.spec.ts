@@ -105,7 +105,7 @@ describe('TopicService', () => {
   });
 
   describe('user interaction', () => {
-    const testUser = {name: 'luigi', id: 'l1234'};
+    const testUser = {name: 'luigi', id: 'l1234', emailAddress: 'luigi@luigi.it'};
     const testTopic = 'mushrooms';
 
     beforeEach(async () => {

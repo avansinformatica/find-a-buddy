@@ -1,6 +1,6 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 
-import { ResourceId, UserCredentials } from '@find-a-buddy/data';
+import { ResourceId, UserCredentials, UserRegistration } from '@find-a-buddy/data';
 
 import { AuthService } from './auth.service';
 
@@ -9,12 +9,12 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('register')
-    async register(@Body() credentials: UserCredentials): Promise<ResourceId> {
+    async register(@Body() credentials: UserRegistration): Promise<ResourceId> {
         try {
             await this.authService.registerUser(credentials.username, credentials.password);
     
             return {
-                id: await this.authService.createUser(credentials.username)
+                id: await this.authService.createUser(credentials.username, credentials.emailAddress),
             };
         } catch (e) {
             throw new HttpException('Username invalid', HttpStatus.BAD_REQUEST);

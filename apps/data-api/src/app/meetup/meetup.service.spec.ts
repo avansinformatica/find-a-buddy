@@ -58,10 +58,10 @@ describe('MeetupService', () => {
     topicTubes = new topicModel({title: 'tubes'});
     topicMushrooms = new topicModel({title: 'mushrooms'});
 
-    mario = new userModel({name: 'mario', tutorTopics: ['coins'], pupilTopics: ['mushrooms']});
-    luigi = new userModel({name: 'luigi', pupilTopics: ['coins']});
-    yoshi = new userModel({name: 'yoshi', tutorTopics: ['coins'], pupilTopics: ['tubes']});
-    toad = new userModel({name: 'toad', tutorTopics: ['tubes', 'mushrooms'], pupilTopics: ['coins']});
+    mario = new userModel({name: 'mario', emailAddress: 'mail@address.com', tutorTopics: ['coins'], pupilTopics: ['mushrooms']});
+    luigi = new userModel({name: 'luigi', emailAddress: 'mail@address.com', pupilTopics: ['coins']});
+    yoshi = new userModel({name: 'yoshi', emailAddress: 'mail@address.com', tutorTopics: ['coins'], pupilTopics: ['tubes']});
+    toad = new userModel({name: 'toad', emailAddress: 'mail@address.com', tutorTopics: ['tubes', 'mushrooms'], pupilTopics: ['coins']});
 
     meetupA = new meetupModel({
       tutorRef: mario._id,

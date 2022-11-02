@@ -5,7 +5,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication, MiddlewareConsumer, Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 
-import { UserCredentials } from '@find-a-buddy/data';
+import { UserRegistration } from '@find-a-buddy/data';
 
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from "mongodb-memory-server";
@@ -87,12 +87,13 @@ describe('end-to-end tests of data API', () => {
   });
 
   describe('single user', () => {
-    let credentials: UserCredentials;
+    let credentials: UserRegistration;
 
     beforeEach(() => {
       credentials = {
         username: 'dion',
         password: 'supergeheim123',
+        emailAddress: 'dion@dion.nl',
       };
     });
 
@@ -174,6 +175,9 @@ describe('end-to-end tests of data API', () => {
       expect(getSelf1.body).toHaveProperty('rating', null);
       expect(getSelf1.body).toHaveProperty('pupilTopics', [pupilTopic.title]);
       expect(getSelf1.body).toHaveProperty('tutorTopics', [tutorTopic.title]);
+      expect(getSelf1.body).toHaveProperty('isActive', true);
+      expect(getSelf1.body).toHaveProperty('roles', []);
+      expect(getSelf1.body).toHaveProperty('emailAddress', credentials.emailAddress);
 
       const removePupilTopic = await request(server)
         .delete('/data-api/topic')
@@ -210,6 +214,9 @@ describe('end-to-end tests of data API', () => {
       expect(getSelf2.body).toHaveProperty('rating', null);
       expect(getSelf2.body).toHaveProperty('pupilTopics', []);
       expect(getSelf2.body).toHaveProperty('tutorTopics', []);
+      expect(getSelf2.body).toHaveProperty('isActive', true);
+      expect(getSelf2.body).toHaveProperty('roles', []);
+      expect(getSelf2.body).toHaveProperty('emailAddress', credentials.emailAddress);
     });
   });
 
@@ -220,11 +227,13 @@ describe('end-to-end tests of data API', () => {
       credsA = {
         username: 'dion',
         password: 'supergeheim123', // ik heb altijd hetzelfde wachtwoord als jan...
+        emailAddress: 'dion@dion.nl',
       };
 
       credsB = {
         username: 'jan',
         password: 'supergeheim123',
+        emailAddress: 'jan@jan.nl',
       };
     });
 
@@ -235,6 +244,7 @@ describe('end-to-end tests of data API', () => {
       const credsC = {
         username: 'ruud',
         password: 'noggeheimer321',
+        emailAddress: 'ruud@ruud.nl',
       };
 
       const registerA = await request(server)
@@ -398,14 +408,25 @@ describe('end-to-end tests of data API', () => {
       expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('tutorTopics', []);
       expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('pupilTopics', [topicA.title]);
       expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('rating', null);
+      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('isActive', true);
+      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('roles', []);
+      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('emailAddress', credsA.emailAddress);
+      
       expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('name', credsB.username);
       expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('pupilTopics', []);
       expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('tutorTopics', [topicB.title]);
       expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('rating', 5);
+      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('isActive', true);
+      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('roles', []);
+      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('emailAddress', credsB.emailAddress);
+      
       expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('name', credsC.username);
       expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('tutorTopics', []);
       expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('pupilTopics', []);
       expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('rating', null);
+      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('isActive', true);
+      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('roles', []);
+      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('emailAddress', credsC.emailAddress);
 
       const checkUserDetail = await request(server)
         .get(`/data-api/user/${idB}`)
@@ -417,6 +438,9 @@ describe('end-to-end tests of data API', () => {
       expect(checkUserDetail.body).toHaveProperty('tutorTopics', [topicB.title]);
       expect(checkUserDetail.body).toHaveProperty('rating', 5);
       expect(checkUserDetail.body).toHaveProperty('reviews');
+      expect(checkUserDetail.body).toHaveProperty('isActive', true);
+      expect(checkUserDetail.body).toHaveProperty('roles', []);
+      expect(checkUserDetail.body).toHaveProperty('emailAddress', credsB.emailAddress);
       expect(checkUserDetail.body.reviews).toHaveLength(1);
       expect(checkUserDetail.body.reviews[0]).toHaveProperty('id', meetupId);
       expect(checkUserDetail.body.reviews[0]).toHaveProperty('topic', topicA.title);
@@ -425,8 +449,6 @@ describe('end-to-end tests of data API', () => {
       expect(checkUserDetail.body.reviews[0]).toHaveProperty('text', review.text);
       expect(checkUserDetail.body.reviews[0]).toHaveProperty('tutor', {name: credsB.username, id: idB});
       expect(checkUserDetail.body.reviews[0]).toHaveProperty('pupil', {name: credsA.username, id: idA});
-
-
     });
   
     it('two users register, log in, get list of users and their own account info', async () => {
@@ -470,6 +492,9 @@ describe('end-to-end tests of data API', () => {
       expect(getUserListA.body[0]).toHaveProperty('rating');
       expect(getUserListA.body[0]).toHaveProperty('pupilTopics');
       expect(getUserListA.body[0]).toHaveProperty('tutorTopics');
+      expect(getUserListA.body[0]).toHaveProperty('isActive');
+      expect(getUserListA.body[0]).toHaveProperty('roles');
+      expect(getUserListA.body[0]).toHaveProperty('emailAddress');
       expect(getUserListA.body.map(u => u.name)).toContain(credsA.username);
       expect(getUserListA.body.map(u => u.name)).toContain(credsB.username);
 
@@ -484,6 +509,9 @@ describe('end-to-end tests of data API', () => {
       expect(getUserListB.body[0]).toHaveProperty('rating');
       expect(getUserListB.body[0]).toHaveProperty('pupilTopics');
       expect(getUserListB.body[0]).toHaveProperty('tutorTopics');
+      expect(getUserListB.body[0]).toHaveProperty('isActive');
+      expect(getUserListB.body[0]).toHaveProperty('roles');
+      expect(getUserListB.body[0]).toHaveProperty('emailAddress');
       expect(getUserListB.body.map(u => u.name)).toContain(credsA.username);
       expect(getUserListB.body.map(u => u.name)).toContain(credsB.username);
 
@@ -498,6 +526,9 @@ describe('end-to-end tests of data API', () => {
       expect(getSelfA.body).toHaveProperty('reviews', []);
       expect(getSelfA.body).toHaveProperty('tutorTopics', []);
       expect(getSelfA.body).toHaveProperty('pupilTopics', []);
+      expect(getSelfA.body).toHaveProperty('isActive', true);
+      expect(getSelfA.body).toHaveProperty('roles', []);
+      expect(getSelfA.body).toHaveProperty('emailAddress', credsA.emailAddress);
 
       const getSelfB = await request(server)
         .get('/data-api/user/self')
@@ -510,6 +541,9 @@ describe('end-to-end tests of data API', () => {
       expect(getSelfB.body).toHaveProperty('reviews', []);
       expect(getSelfB.body).toHaveProperty('tutorTopics', []);
       expect(getSelfB.body).toHaveProperty('pupilTopics', []);
+      expect(getSelfB.body).toHaveProperty('isActive', true);
+      expect(getSelfB.body).toHaveProperty('roles', []);
+      expect(getSelfB.body).toHaveProperty('emailAddress', credsB.emailAddress);
     });
   });  
 });

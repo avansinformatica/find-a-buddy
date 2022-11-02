@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { v4 as uuid } from 'uuid';
+import isEmail from 'validator/lib/isEmail';
 
 import { Meetup } from '../meetup/meetup.schema';
 
@@ -16,6 +17,27 @@ export class User {
     unique: true,
   })
   name: string;
+
+  @Prop({
+    required: true,
+    default: [],
+  })
+  roles: string[];
+
+  @Prop({
+    required: true,
+    default: true,
+  })
+  isActive: boolean;
+
+  @Prop({
+    required: true,
+    validate: {
+      validator: isEmail,
+      message: 'should be a valid email address',
+    }
+  })
+  emailAddress: string;
 
   // we don't use hooks to ensure the topics exist, as nestjs does not play nice
   // https://github.com/nestjs/mongoose/issues/7

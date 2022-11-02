@@ -7,11 +7,13 @@ export interface UserIdentity {
 }
 
 export interface UserInfo extends UserIdentity {
+    rating: number
+    isActive: boolean
+    emailAddress: string
+    roles: string[]
 
-    rating: number;
-
-    pupilTopics: string[];
-    tutorTopics: string[];
+    pupilTopics: string[]
+    tutorTopics: string[]
 }
 
 export interface User extends UserInfo {
@@ -21,4 +23,8 @@ export interface User extends UserInfo {
 export interface UserCredentials {
     username: string;
     password: string;
+}
+
+export interface UserRegistration extends UserCredentials {
+    emailAddress: string
 }

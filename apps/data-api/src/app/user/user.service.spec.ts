@@ -40,18 +40,21 @@ describe('UserService', () => {
   const testUsers = [{
     id: 'jan123',
     name: 'jan',
+    emailAddress: 'mail@address.com',
     tutorTopics: [],
     pupilTopics: [],
     meetups: [],
   }, {
     id: 'dion123',
     name: 'dion',
+    emailAddress: 'mail@address.com',
     tutorTopics: [],
     pupilTopics: [],
     meetups: [],
   }, {
     id: 'davide123',
     name: 'davide',
+    emailAddress: 'mail@address.com',
     tutorTopics: [],
     pupilTopics: [],
     meetups: [],
