@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ApiResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<any>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<unknown>> {
     return next
       .handle()
       .pipe(
