@@ -19,10 +19,10 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v1
             # Install NodeJS
-            - name: Use Node.js 12.x
+            - name: Use Node.js 13.x
               uses: actions/setup-node@v1
               with:
-                  node-version: 12.x
+                  node-version: 13.x
             # Build the app using cypress
             - name: Cypress run
               uses: cypress-io/github-action@v1
