@@ -22,7 +22,7 @@ jobs:
                   deploy_alias: ${{ env.BRANCH_NAME }}
                   build-directory: dist/find-a-buddy
 
-            - name: Deploy
+            # - name: Deploy
               uses: netlify/actions/cli@master
               with:
                   args: deploy --dir=site --functions=functions
