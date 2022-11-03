@@ -1,34 +1,35 @@
 name: 'Netlify Deploy'
 
 on:
-    push:
-        branches:
-            - main
-            - feature-ui-*
-    release:
-        types: ['published']
+  push:
+    branches:
+      - main
+      - feature-ui-*
+  release:
+    types: ['published']
 
 jobs:
-    deploy:
-        name: 'Deploy'
-        runs-on: ubuntu-latest
+  deploy:
+    name: 'Deploy'
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout and build FaB frontend
-              uses: actions/checkout@v2
-              with:
-                  fetch-depth: 0              
-              uses: nrwl/nx-set-shas@v3
-              run: npm ci
-              run: npx nx build find-a-buddy
+    steps:
+      - name: Checkout and build FaB frontend
+        uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
 
-            - name: Deploy to Netlify
-              uses: actions/checkout@v1
-              uses: jsmrcaga/action-netlify-deploy@master
-              with:
-                  NETLIFY_AUTH_TOKEN: 'MaHDChLBG5UT1I5j7kuqPh4zVKl7lCyzhbMIjLC31P8' # ${{ secrets.NETLIFY_AUTH_TOKEN }}
-                  NETLIFY_SITE_ID: '48a7ec73-bffc-4d2c-b8ea-59379ff0bf7d' # ${{ secrets.NETLIFY_SITE_ID }}
-                  NETLIFY_DEPLOY_MESSAGE: 'Prod deploy v${{ github.ref }}'
-                  NETLIFY_DEPLOY_TO_PROD: true
-                  deploy_alias: ${{ env.BRANCH_NAME }}
-                  build-directory: dist/find-a-buddy
+      - uses: nrwl/nx-set-shas@v3
+        run: npm ci --legacy-peer-deps
+        run: npx nx build find-a-buddy
+
+      - name: Deploy to Netlify
+        uses: actions/checkout@v1
+        uses: jsmrcaga/action-netlify-deploy@master
+        with:
+          NETLIFY_AUTH_TOKEN: 'MaHDChLBG5UT1I5j7kuqPh4zVKl7lCyzhbMIjLC31P8' # ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: '48a7ec73-bffc-4d2c-b8ea-59379ff0bf7d' # ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_DEPLOY_MESSAGE: 'Prod deploy v${{ github.ref }}'
+          NETLIFY_DEPLOY_TO_PROD: true
+          deploy_alias: ${{ env.BRANCH_NAME }}
+          build-directory: dist/find-a-buddy
