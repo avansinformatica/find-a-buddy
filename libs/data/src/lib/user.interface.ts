@@ -1,15 +1,15 @@
-import { Id } from './id.type'
-import { Review } from './review.interface'
+import { Id } from "./id.type";
+import { Review } from "./review.interface";
 
 export interface UserIdentity {
-    id: Id
-    name: string
+    id: Id;
+    name: string;
 }
 
 export interface UserInfo extends UserIdentity {
     rating: number
     isActive: boolean
-    emailAdress: string
+    emailAddress: string
     roles: string[]
 
     pupilTopics: string[]
@@ -17,5 +17,5 @@ export interface UserInfo extends UserIdentity {
 }
 
 export interface User extends UserInfo {
-    reviews: Review[]
+    reviews: Review[];
 }

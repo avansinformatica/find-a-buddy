@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core'
 
 @Component({
-  selector: 'fab-layout',
-  templateUrl: './layout.component.html',
+    selector: 'fab-layout',
+    templateUrl: './layout.component.html',
 })
 export class LayoutComponent {
-  apptitle = 'Share-a-Meal';
+    apptitle = 'Find A Buddy'
 }
