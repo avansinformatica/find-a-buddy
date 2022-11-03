@@ -14,15 +14,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout and build FaB frontend
-      - uses: actions/checkout@v2
-        with:
-            fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v3
-      - run: | 
-          npm ci --legacy-peer-deps
-          npx nx build find-a-buddy
-
       - name: Deploy to Netlify
         uses: actions/checkout@v1
         uses: jsmrcaga/action-netlify-deploy@master
