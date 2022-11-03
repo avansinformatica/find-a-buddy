@@ -21,9 +21,8 @@ jobs:
                   NETLIFY_DEPLOY_TO_PROD: true
                   deploy_alias: ${{ env.BRANCH_NAME }}
                   build-directory: dist/find-a-buddy
-
             # - name: Deploy
-              uses: netlify/actions/cli@master
+            - uses: netlify/actions/cli@master
               with:
                   args: deploy --dir=site --functions=functions
               env:
