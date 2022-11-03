@@ -24,8 +24,8 @@ jobs:
               with:
                   node-version: 13.x
             # Run npm install and build on our code
-            - run: npm install
-            - run: npm run build --if-present
+            - run: npm install --production
+            - run: npm run build --if-present --verbose
             # Deploy to Netlify using our production secrets
             - name: Deploy to netlify
               uses: netlify/actions/cli@master
