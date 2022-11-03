@@ -14,6 +14,7 @@ import { disconnect } from "mongoose";
 import { AuthModule } from './app/auth/auth.module';
 import { DataModule } from './app/data.module';
 import { TokenMiddleware } from './app/auth/token.middleware';
+import { ApiResponseInterceptor } from './app/api-response.interceptor';
 
 let mongod: MongoMemoryServer;
 let uri: string;
@@ -65,6 +66,7 @@ describe('end-to-end tests of data API', () => {
       .compile();
 
     app = module.createNestApplication();
+    app.useGlobalInterceptors(new ApiResponseInterceptor());
     await app.init();
 
     mongoc = new MongoClient(uri);
@@ -102,23 +104,28 @@ describe('end-to-end tests of data API', () => {
         .post('/auth-api/register')
         .send(credentials);
         
-      expect(register.body).toHaveProperty('id');
       expect(register.status).toBe(201);
+      expect(register.body).toHaveProperty('results');
+      expect(register.body.results).toHaveProperty('id');
+      expect(register.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
   
       const login = await request(server)
         .post('/auth-api/login')
         .send(credentials);
   
       expect(login.status).toBe(201);
+      expect(login.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(login.body).toHaveProperty('results.token');
   
-      const token = login.body.token;
+      const token = login.body.results.token;
   
       const meetups = await request(server)
         .get('/data-api/meetup')
         .set('authorization', token);
   
       expect(meetups.status).toBe(200);
-      expect(meetups.body).toStrictEqual([]);
+      expect(meetups.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 0});
+      expect(meetups.body).toHaveProperty('results', []);
     });
 
     it('user registers, logs in, sets tutor and pupil topic, topics are found, removes topics, topics are found, looks up own account info', async () => {
@@ -129,16 +136,19 @@ describe('end-to-end tests of data API', () => {
         .post('/auth-api/register')
         .send(credentials);
 
-      expect(register.body).toHaveProperty('id');
       expect(register.status).toBe(201);
+      expect(register.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(register.body).toHaveProperty('results.id');
   
       const login = await request(server)
         .post('/auth-api/login')
         .send(credentials);
   
       expect(login.status).toBe(201);
+      expect(login.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(login.body).toHaveProperty('results.token');
   
-      const token = login.body.token;
+      const token = login.body.results.token;
       
       const setPupilTopic = await request(server)
         .post('/data-api/topic')
@@ -146,6 +156,7 @@ describe('end-to-end tests of data API', () => {
         .send(pupilTopic);
       
       expect(setPupilTopic.status).toBe(201);
+      expect(setPupilTopic.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
 
       const setTutorTopic = await request(server)
         .post('/data-api/topic')
@@ -153,31 +164,36 @@ describe('end-to-end tests of data API', () => {
         .send(tutorTopic);
     
       expect(setTutorTopic.status).toBe(201);
+      expect(setTutorTopic.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
 
       const getTopics1 = await request(server)
         .get('/data-api/topic')
         .set('authorization', token);
         
       expect(getTopics1.status).toBe(200);
-      expect(getTopics1.body).toHaveLength(2);
-      expect(getTopics1.body.map(t => t.title)).toContain(pupilTopic.title);
-      expect(getTopics1.body.map(t => t.title)).toContain(tutorTopic.title);
-      expect(getTopics1.body[0]).toHaveProperty('id');
+      expect(getTopics1.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 2});
+      expect(getTopics1.body).toHaveProperty('results');
+      expect(getTopics1.body.results).toHaveLength(2);
+      expect(getTopics1.body.results.map(t => t.title)).toContain(pupilTopic.title);
+      expect(getTopics1.body.results.map(t => t.title)).toContain(tutorTopic.title);
+      expect(getTopics1.body.results[0]).toHaveProperty('id');
 
       const getSelf1 = await request(server)
         .get('/data-api/user/self')
         .set('authorization', token);
         
       expect(getSelf1.status).toBe(200);
-      expect(getSelf1.body).toHaveProperty('id');
-      expect(getSelf1.body).toHaveProperty('name', credentials.username);
-      expect(getSelf1.body).toHaveProperty('reviews', []);
-      expect(getSelf1.body).toHaveProperty('rating', null);
-      expect(getSelf1.body).toHaveProperty('pupilTopics', [pupilTopic.title]);
-      expect(getSelf1.body).toHaveProperty('tutorTopics', [tutorTopic.title]);
-      expect(getSelf1.body).toHaveProperty('isActive', true);
-      expect(getSelf1.body).toHaveProperty('roles', []);
-      expect(getSelf1.body).toHaveProperty('emailAddress', credentials.emailAddress);
+      expect(getSelf1.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(getSelf1.body).toHaveProperty('results');
+      expect(getSelf1.body.results).toHaveProperty('id');
+      expect(getSelf1.body.results).toHaveProperty('name', credentials.username);
+      expect(getSelf1.body.results).toHaveProperty('reviews', []);
+      expect(getSelf1.body.results).toHaveProperty('rating', null);
+      expect(getSelf1.body.results).toHaveProperty('pupilTopics', [pupilTopic.title]);
+      expect(getSelf1.body.results).toHaveProperty('tutorTopics', [tutorTopic.title]);
+      expect(getSelf1.body.results).toHaveProperty('isActive', true);
+      expect(getSelf1.body.results).toHaveProperty('roles', []);
+      expect(getSelf1.body.results).toHaveProperty('emailAddress', credentials.emailAddress);
 
       const removePupilTopic = await request(server)
         .delete('/data-api/topic')
@@ -185,6 +201,7 @@ describe('end-to-end tests of data API', () => {
         .send(pupilTopic);
       
       expect(removePupilTopic.status).toBe(200);
+      expect(removePupilTopic.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
 
       const removeTutorTopic = await request(server)
         .delete('/data-api/topic')
@@ -192,31 +209,36 @@ describe('end-to-end tests of data API', () => {
         .send(tutorTopic);
       
       expect(removeTutorTopic.status).toBe(200);
+      expect(removeTutorTopic.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
 
       const getTopics2 = await request(server)
         .get('/data-api/topic')
         .set('authorization', token);
         
       expect(getTopics2.status).toBe(200);
-      expect(getTopics2.body).toHaveLength(2);
-      expect(getTopics2.body.map(t => t.title)).toContain(pupilTopic.title);
-      expect(getTopics2.body.map(t => t.title)).toContain(tutorTopic.title);
-      expect(getTopics2.body[0]).toHaveProperty('id');
+      expect(getTopics2.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 2});
+      expect(getTopics2.body).toHaveProperty('results');
+      expect(getTopics2.body.results).toHaveLength(2);
+      expect(getTopics2.body.results.map(t => t.title)).toContain(pupilTopic.title);
+      expect(getTopics2.body.results.map(t => t.title)).toContain(tutorTopic.title);
+      expect(getTopics2.body.results[0]).toHaveProperty('id');
         
       const getSelf2 = await request(server)
         .get('/data-api/user/self')
         .set('authorization', token);
         
       expect(getSelf2.status).toBe(200);
-      expect(getSelf2.body).toHaveProperty('id');
-      expect(getSelf2.body).toHaveProperty('name', credentials.username);
-      expect(getSelf2.body).toHaveProperty('reviews', []);
-      expect(getSelf2.body).toHaveProperty('rating', null);
-      expect(getSelf2.body).toHaveProperty('pupilTopics', []);
-      expect(getSelf2.body).toHaveProperty('tutorTopics', []);
-      expect(getSelf2.body).toHaveProperty('isActive', true);
-      expect(getSelf2.body).toHaveProperty('roles', []);
-      expect(getSelf2.body).toHaveProperty('emailAddress', credentials.emailAddress);
+      expect(getSelf2.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(getSelf2.body).toHaveProperty('results');
+      expect(getSelf2.body.results).toHaveProperty('id');
+      expect(getSelf2.body.results).toHaveProperty('name', credentials.username);
+      expect(getSelf2.body.results).toHaveProperty('reviews', []);
+      expect(getSelf2.body.results).toHaveProperty('rating', null);
+      expect(getSelf2.body.results).toHaveProperty('pupilTopics', []);
+      expect(getSelf2.body.results).toHaveProperty('tutorTopics', []);
+      expect(getSelf2.body.results).toHaveProperty('isActive', true);
+      expect(getSelf2.body.results).toHaveProperty('roles', []);
+      expect(getSelf2.body.results).toHaveProperty('emailAddress', credentials.emailAddress);
     });
   });
 
@@ -251,47 +273,56 @@ describe('end-to-end tests of data API', () => {
         .post('/auth-api/register')
         .send(credsA);
 
-      expect(registerA.body).toHaveProperty('id');
       expect(registerA.status).toBe(201);
+      expect(registerA.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(registerA.body).toHaveProperty('results.id');
   
       const registerB = await request(server)
         .post('/auth-api/register')
         .send(credsB);
       
-      expect(registerB.body).toHaveProperty('id');
       expect(registerB.status).toBe(201);
+      expect(registerB.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(registerB.body).toHaveProperty('results.id');
 
       const registerC = await request(server)
         .post('/auth-api/register')
         .send(credsC);
       
-      expect(registerC.body).toHaveProperty('id');
       expect(registerC.status).toBe(201);
+      expect(registerC.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(registerC.body).toHaveProperty('results.id');
 
       const loginA = await request(server)
         .post('/auth-api/login')
         .send(credsA);
   
       expect(loginA.status).toBe(201);
+      expect(loginA.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(loginA.body).toHaveProperty('results.token');
       
       const loginB = await request(server)
         .post('/auth-api/login')
         .send(credsB);
       
       expect(loginB.status).toBe(201);
+      expect(loginB.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(loginB.body).toHaveProperty('results.token');
 
       const loginC = await request(server)
         .post('/auth-api/login')
         .send(credsC);
       
       expect(loginC.status).toBe(201);
+      expect(loginC.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(loginC.body).toHaveProperty('results.token');
       
-      const tokenA = loginA.body.token;
-      const tokenB = loginB.body.token;
-      const tokenC = loginC.body.token;
-      const idA = registerA.body.id;
-      const idB = registerB.body.id;
-      const idC = registerC.body.id;
+      const tokenA = loginA.body.results.token;
+      const tokenB = loginB.body.results.token;
+      const tokenC = loginC.body.results.token;
+      const idA = registerA.body.results.id;
+      const idB = registerB.body.results.id;
+      const idC = registerC.body.results.id;
 
       const setTopicA = await request(server)
         .post('/data-api/topic')
@@ -299,6 +330,7 @@ describe('end-to-end tests of data API', () => {
         .send(topicA);
 
       expect(setTopicA.status).toBe(201);
+      expect(setTopicA.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
       
       const setTopicB = await request(server)
         .post('/data-api/topic')
@@ -306,6 +338,7 @@ describe('end-to-end tests of data API', () => {
         .send(topicB);
 
       expect(setTopicB.status).toBe(201);
+      expect(setTopicB.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
 
       const meetup = {topic: 'NestJS', tutorId: idB, datetime: new Date()};
 
@@ -315,66 +348,76 @@ describe('end-to-end tests of data API', () => {
         .send(meetup);
       
       expect(createMeetup.status).toBe(201);
-      expect(createMeetup.body).toHaveProperty('id');
+      expect(createMeetup.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(createMeetup.body).toHaveProperty('results.id');
 
-      const meetupId = createMeetup.body.id;
+      const meetupId = createMeetup.body.results.id;
 
       const checkInvite = await request(server)
         .get('/data-api/meetup/invite')
         .set('authorization', tokenB);
 
       expect(checkInvite.status).toBe(200);
-      expect(checkInvite.body).toHaveLength(1);
-      expect(checkInvite.body[0]).toHaveProperty('topic', meetup.topic);
-      expect(checkInvite.body[0]).toHaveProperty('datetime', meetup.datetime.toISOString());
-      expect(checkInvite.body[0]).toHaveProperty('accepted', false);
-      expect(checkInvite.body[0]).toHaveProperty('pupil', {name: credsA.username, id: idA});
-      expect(checkInvite.body[0]).toHaveProperty('tutor', {name: credsB.username, id: idB});
+      expect(checkInvite.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 1});
+      expect(checkInvite.body).toHaveProperty('results');
+      expect(checkInvite.body.results).toHaveLength(1);
+      expect(checkInvite.body.results[0]).toHaveProperty('topic', meetup.topic);
+      expect(checkInvite.body.results[0]).toHaveProperty('datetime', meetup.datetime.toISOString());
+      expect(checkInvite.body.results[0]).toHaveProperty('accepted', false);
+      expect(checkInvite.body.results[0]).toHaveProperty('pupil', {name: credsA.username, id: idA});
+      expect(checkInvite.body.results[0]).toHaveProperty('tutor', {name: credsB.username, id: idB});
       
       const acceptInvite = await request(server)
         .post(`/data-api/meetup/${meetupId}/accept`)
         .set('authorization', tokenB);
       
       expect(acceptInvite.status).toBe(201);
+      expect(acceptInvite.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
 
       const checkMeetupListA = await request(server)
         .get('/data-api/meetup')
         .set('authorization', tokenA);
 
       expect(checkMeetupListA.status).toBe(200);
-      expect(checkMeetupListA.body).toHaveLength(1);
-      expect(checkMeetupListA.body[0]).toHaveProperty('id', meetupId);
-      expect(checkMeetupListA.body[0]).toHaveProperty('topic', topicA.title);
-      expect(checkMeetupListA.body[0]).toHaveProperty('datetime', meetup.datetime.toISOString());
-      expect(checkMeetupListA.body[0]).toHaveProperty('accepted', true);
-      expect(checkMeetupListA.body[0]).toHaveProperty('pupil', {name: credsA.username, id: idA});
-      expect(checkMeetupListA.body[0]).toHaveProperty('tutor', {name: credsB.username, id: idB});
+      expect(checkMeetupListA.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 1});
+      expect(checkMeetupListA.body).toHaveProperty('results');
+      expect(checkMeetupListA.body.results).toHaveLength(1);
+      expect(checkMeetupListA.body.results[0]).toHaveProperty('id', meetupId);
+      expect(checkMeetupListA.body.results[0]).toHaveProperty('topic', topicA.title);
+      expect(checkMeetupListA.body.results[0]).toHaveProperty('datetime', meetup.datetime.toISOString());
+      expect(checkMeetupListA.body.results[0]).toHaveProperty('accepted', true);
+      expect(checkMeetupListA.body.results[0]).toHaveProperty('pupil', {name: credsA.username, id: idA});
+      expect(checkMeetupListA.body.results[0]).toHaveProperty('tutor', {name: credsB.username, id: idB});
 
       const checkMeetupDetailB = await request(server)
         .get(`/data-api/meetup/${meetupId}`)
         .set('authorization', tokenB);
 
       expect(checkMeetupDetailB.status).toBe(200);
-      expect(checkMeetupDetailB.body).toHaveProperty('id', meetupId);
-      expect(checkMeetupDetailB.body).toHaveProperty('topic', topicA.title);
-      expect(checkMeetupDetailB.body).toHaveProperty('datetime', meetup.datetime.toISOString());
-      expect(checkMeetupDetailB.body).toHaveProperty('accepted', true);
-      expect(checkMeetupDetailB.body).toHaveProperty('pupil', {name: credsA.username, id: idA});
-      expect(checkMeetupDetailB.body).toHaveProperty('tutor', {name: credsB.username, id: idB});
+      expect(checkMeetupDetailB.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(checkMeetupDetailB.body).toHaveProperty('results');
+      expect(checkMeetupDetailB.body.results).toHaveProperty('id', meetupId);
+      expect(checkMeetupDetailB.body.results).toHaveProperty('topic', topicA.title);
+      expect(checkMeetupDetailB.body.results).toHaveProperty('datetime', meetup.datetime.toISOString());
+      expect(checkMeetupDetailB.body.results).toHaveProperty('accepted', true);
+      expect(checkMeetupDetailB.body.results).toHaveProperty('pupil', {name: credsA.username, id: idA});
+      expect(checkMeetupDetailB.body.results).toHaveProperty('tutor', {name: credsB.username, id: idB});
 
       const checkMeetupListC = await request(server)
         .get('/data-api/meetup')
         .set('authorization', tokenC);
 
       expect(checkMeetupListC.status).toBe(200);
-      expect(checkMeetupListC.body).toHaveLength(0);
+      expect(checkMeetupListC.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 0});
+      expect(checkMeetupListC.body).toHaveProperty('results');
+      expect(checkMeetupListC.body.results).toHaveLength(0);
 
       const checkMeetupDetailC = await request(server)
         .get(`/data-api/meetup/${meetupId}`)
         .set('authorization', tokenC);
 
       expect(checkMeetupDetailC.status).toBe(200);
-      expect(checkMeetupDetailC.body).toStrictEqual({});
+      expect(checkMeetupDetailC.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
       
       const review = {rating: 5, text: 'Goede hulp!'};
 
@@ -384,71 +427,78 @@ describe('end-to-end tests of data API', () => {
         .send(review);
         
       expect(leaveReview.status).toBe(201);
+      expect(leaveReview.body).toHaveProperty('info', {version: '1.0', type: 'none', count: 0});
 
       const checkReview = await request(server)
         .get(`/data-api/meetup/${meetupId}`)
         .set('authorization', tokenB);
 
       expect(checkReview.status).toBe(200);
-      expect(checkReview.body).toHaveProperty('id', meetupId);
-      expect(checkReview.body).toHaveProperty('topic', topicA.title);
-      expect(checkReview.body).toHaveProperty('datetime', meetup.datetime.toISOString());
-      expect(checkReview.body).toHaveProperty('accepted', true);
-      expect(checkReview.body).toHaveProperty('pupil', {name: credsA.username, id: idA});
-      expect(checkReview.body).toHaveProperty('tutor', {name: credsB.username, id: idB});
-      expect(checkReview.body).toHaveProperty('review', review);
+      expect(checkReview.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(checkReview.body).toHaveProperty('results');
+      expect(checkReview.body.results).toHaveProperty('id', meetupId);
+      expect(checkReview.body.results).toHaveProperty('topic', topicA.title);
+      expect(checkReview.body.results).toHaveProperty('datetime', meetup.datetime.toISOString());
+      expect(checkReview.body.results).toHaveProperty('accepted', true);
+      expect(checkReview.body.results).toHaveProperty('pupil', {name: credsA.username, id: idA});
+      expect(checkReview.body.results).toHaveProperty('tutor', {name: credsB.username, id: idB});
+      expect(checkReview.body.results).toHaveProperty('review', review);
       
       const checkUserList = await request(server)
         .get('/data-api/user')
         .set('authorization', tokenC);
         
       expect(checkUserList.status).toBe(200);
-      expect(checkUserList.body).toHaveLength(3);
-      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('name', credsA.username);
-      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('tutorTopics', []);
-      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('pupilTopics', [topicA.title]);
-      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('rating', null);
-      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('isActive', true);
-      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('roles', []);
-      expect(checkUserList.body.filter(u => u.id == idA)[0]).toHaveProperty('emailAddress', credsA.emailAddress);
+      expect(checkUserList.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 3});
+      expect(checkUserList.body).toHaveProperty('results');
+      expect(checkUserList.body.results).toHaveLength(3);
+      expect(checkUserList.body.results.filter(u => u.id == idA)[0]).toHaveProperty('name', credsA.username);
+      expect(checkUserList.body.results.filter(u => u.id == idA)[0]).toHaveProperty('tutorTopics', []);
+      expect(checkUserList.body.results.filter(u => u.id == idA)[0]).toHaveProperty('pupilTopics', [topicA.title]);
+      expect(checkUserList.body.results.filter(u => u.id == idA)[0]).toHaveProperty('rating', null);
+      expect(checkUserList.body.results.filter(u => u.id == idA)[0]).toHaveProperty('isActive', true);
+      expect(checkUserList.body.results.filter(u => u.id == idA)[0]).toHaveProperty('roles', []);
+      expect(checkUserList.body.results.filter(u => u.id == idA)[0]).toHaveProperty('emailAddress', credsA.emailAddress);
       
-      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('name', credsB.username);
-      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('pupilTopics', []);
-      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('tutorTopics', [topicB.title]);
-      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('rating', 5);
-      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('isActive', true);
-      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('roles', []);
-      expect(checkUserList.body.filter(u => u.id == idB)[0]).toHaveProperty('emailAddress', credsB.emailAddress);
+      expect(checkUserList.body.results.filter(u => u.id == idB)[0]).toHaveProperty('name', credsB.username);
+      expect(checkUserList.body.results.filter(u => u.id == idB)[0]).toHaveProperty('pupilTopics', []);
+      expect(checkUserList.body.results.filter(u => u.id == idB)[0]).toHaveProperty('tutorTopics', [topicB.title]);
+      expect(checkUserList.body.results.filter(u => u.id == idB)[0]).toHaveProperty('rating', 5);
+      expect(checkUserList.body.results.filter(u => u.id == idB)[0]).toHaveProperty('isActive', true);
+      expect(checkUserList.body.results.filter(u => u.id == idB)[0]).toHaveProperty('roles', []);
+      expect(checkUserList.body.results.filter(u => u.id == idB)[0]).toHaveProperty('emailAddress', credsB.emailAddress);
       
-      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('name', credsC.username);
-      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('tutorTopics', []);
-      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('pupilTopics', []);
-      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('rating', null);
-      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('isActive', true);
-      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('roles', []);
-      expect(checkUserList.body.filter(u => u.id == idC)[0]).toHaveProperty('emailAddress', credsC.emailAddress);
+      expect(checkUserList.body.results.filter(u => u.id == idC)[0]).toHaveProperty('name', credsC.username);
+      expect(checkUserList.body.results.filter(u => u.id == idC)[0]).toHaveProperty('tutorTopics', []);
+      expect(checkUserList.body.results.filter(u => u.id == idC)[0]).toHaveProperty('pupilTopics', []);
+      expect(checkUserList.body.results.filter(u => u.id == idC)[0]).toHaveProperty('rating', null);
+      expect(checkUserList.body.results.filter(u => u.id == idC)[0]).toHaveProperty('isActive', true);
+      expect(checkUserList.body.results.filter(u => u.id == idC)[0]).toHaveProperty('roles', []);
+      expect(checkUserList.body.results.filter(u => u.id == idC)[0]).toHaveProperty('emailAddress', credsC.emailAddress);
 
       const checkUserDetail = await request(server)
         .get(`/data-api/user/${idB}`)
         .set('authorization', tokenC);
 
       expect(checkUserDetail.status).toBe(200);
-      expect(checkUserDetail.body).toHaveProperty('name', credsB.username);
-      expect(checkUserDetail.body).toHaveProperty('pupilTopics', []);
-      expect(checkUserDetail.body).toHaveProperty('tutorTopics', [topicB.title]);
-      expect(checkUserDetail.body).toHaveProperty('rating', 5);
-      expect(checkUserDetail.body).toHaveProperty('reviews');
-      expect(checkUserDetail.body).toHaveProperty('isActive', true);
-      expect(checkUserDetail.body).toHaveProperty('roles', []);
-      expect(checkUserDetail.body).toHaveProperty('emailAddress', credsB.emailAddress);
-      expect(checkUserDetail.body.reviews).toHaveLength(1);
-      expect(checkUserDetail.body.reviews[0]).toHaveProperty('id', meetupId);
-      expect(checkUserDetail.body.reviews[0]).toHaveProperty('topic', topicA.title);
-      expect(checkUserDetail.body.reviews[0]).toHaveProperty('datetime', meetup.datetime.toISOString());
-      expect(checkUserDetail.body.reviews[0]).toHaveProperty('rating', review.rating);
-      expect(checkUserDetail.body.reviews[0]).toHaveProperty('text', review.text);
-      expect(checkUserDetail.body.reviews[0]).toHaveProperty('tutor', {name: credsB.username, id: idB});
-      expect(checkUserDetail.body.reviews[0]).toHaveProperty('pupil', {name: credsA.username, id: idA});
+      expect(checkUserDetail.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(checkUserDetail.body).toHaveProperty('results');
+      expect(checkUserDetail.body.results).toHaveProperty('name', credsB.username);
+      expect(checkUserDetail.body.results).toHaveProperty('pupilTopics', []);
+      expect(checkUserDetail.body.results).toHaveProperty('tutorTopics', [topicB.title]);
+      expect(checkUserDetail.body.results).toHaveProperty('rating', 5);
+      expect(checkUserDetail.body.results).toHaveProperty('reviews');
+      expect(checkUserDetail.body.results).toHaveProperty('isActive', true);
+      expect(checkUserDetail.body.results).toHaveProperty('roles', []);
+      expect(checkUserDetail.body.results).toHaveProperty('emailAddress', credsB.emailAddress);
+      expect(checkUserDetail.body.results.reviews).toHaveLength(1);
+      expect(checkUserDetail.body.results.reviews[0]).toHaveProperty('id', meetupId);
+      expect(checkUserDetail.body.results.reviews[0]).toHaveProperty('topic', topicA.title);
+      expect(checkUserDetail.body.results.reviews[0]).toHaveProperty('datetime', meetup.datetime.toISOString());
+      expect(checkUserDetail.body.results.reviews[0]).toHaveProperty('rating', review.rating);
+      expect(checkUserDetail.body.results.reviews[0]).toHaveProperty('text', review.text);
+      expect(checkUserDetail.body.results.reviews[0]).toHaveProperty('tutor', {name: credsB.username, id: idB});
+      expect(checkUserDetail.body.results.reviews[0]).toHaveProperty('pupil', {name: credsA.username, id: idA});
     });
   
     it('two users register, log in, get list of users and their own account info', async () => {
@@ -456,94 +506,108 @@ describe('end-to-end tests of data API', () => {
         .post('/auth-api/register')
         .send(credsA);
 
-      expect(registerA.body).toHaveProperty('id');
       expect(registerA.status).toBe(201);
+      expect(registerA.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(registerA.body).toHaveProperty('results.id');
   
       const registerB = await request(server)
         .post('/auth-api/register')
         .send(credsB);
       
-      expect(registerB.body).toHaveProperty('id');
       expect(registerB.status).toBe(201);
+      expect(registerB.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(registerB.body).toHaveProperty('results.id');
 
       const loginA = await request(server)
         .post('/auth-api/login')
         .send(credsA);
   
       expect(loginA.status).toBe(201);
+      expect(loginA.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(loginA.body).toHaveProperty('results.token');
       
       const loginB = await request(server)
         .post('/auth-api/login')
         .send(credsB);
       
       expect(loginB.status).toBe(201);
+      expect(loginB.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(loginB.body).toHaveProperty('results.token');
       
-      const tokenA = loginA.body.token;
-      const tokenB = loginB.body.token;
+      const tokenA = loginA.body.results.token;
+      const tokenB = loginB.body.results.token;
 
       const getUserListA = await request(server)
         .get('/data-api/user')
         .set('authorization', tokenA);
 
       expect(getUserListA.status).toBe(200);
-      expect(getUserListA.body).toHaveLength(2);
-      expect(getUserListA.body[0]).toHaveProperty('id');
-      expect(getUserListA.body[0]).toHaveProperty('name');
-      expect(getUserListA.body[0]).toHaveProperty('rating');
-      expect(getUserListA.body[0]).toHaveProperty('pupilTopics');
-      expect(getUserListA.body[0]).toHaveProperty('tutorTopics');
-      expect(getUserListA.body[0]).toHaveProperty('isActive');
-      expect(getUserListA.body[0]).toHaveProperty('roles');
-      expect(getUserListA.body[0]).toHaveProperty('emailAddress');
-      expect(getUserListA.body.map(u => u.name)).toContain(credsA.username);
-      expect(getUserListA.body.map(u => u.name)).toContain(credsB.username);
+      expect(getUserListA.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 2});
+      expect(getUserListA.body).toHaveProperty('results');
+      expect(getUserListA.body.results).toHaveLength(2);
+      expect(getUserListA.body.results[0]).toHaveProperty('id');
+      expect(getUserListA.body.results[0]).toHaveProperty('name');
+      expect(getUserListA.body.results[0]).toHaveProperty('rating');
+      expect(getUserListA.body.results[0]).toHaveProperty('pupilTopics');
+      expect(getUserListA.body.results[0]).toHaveProperty('tutorTopics');
+      expect(getUserListA.body.results[0]).toHaveProperty('isActive');
+      expect(getUserListA.body.results[0]).toHaveProperty('roles');
+      expect(getUserListA.body.results[0]).toHaveProperty('emailAddress');
+      expect(getUserListA.body.results.map(u => u.name)).toContain(credsA.username);
+      expect(getUserListA.body.results.map(u => u.name)).toContain(credsB.username);
 
       const getUserListB = await request(server)
         .get('/data-api/user')
         .set('authorization', tokenB);
 
       expect(getUserListB.status).toBe(200);
-      expect(getUserListB.body).toHaveLength(2);
-      expect(getUserListB.body[0]).toHaveProperty('id');
-      expect(getUserListB.body[0]).toHaveProperty('name');
-      expect(getUserListB.body[0]).toHaveProperty('rating');
-      expect(getUserListB.body[0]).toHaveProperty('pupilTopics');
-      expect(getUserListB.body[0]).toHaveProperty('tutorTopics');
-      expect(getUserListB.body[0]).toHaveProperty('isActive');
-      expect(getUserListB.body[0]).toHaveProperty('roles');
-      expect(getUserListB.body[0]).toHaveProperty('emailAddress');
-      expect(getUserListB.body.map(u => u.name)).toContain(credsA.username);
-      expect(getUserListB.body.map(u => u.name)).toContain(credsB.username);
+      expect(getUserListB.body).toHaveProperty('info', {version: '1.0', type: 'list', count: 2});
+      expect(getUserListB.body).toHaveProperty('results');
+      expect(getUserListB.body.results).toHaveLength(2);
+      expect(getUserListB.body.results[0]).toHaveProperty('id');
+      expect(getUserListB.body.results[0]).toHaveProperty('name');
+      expect(getUserListB.body.results[0]).toHaveProperty('rating');
+      expect(getUserListB.body.results[0]).toHaveProperty('pupilTopics');
+      expect(getUserListB.body.results[0]).toHaveProperty('tutorTopics');
+      expect(getUserListB.body.results[0]).toHaveProperty('isActive');
+      expect(getUserListB.body.results[0]).toHaveProperty('roles');
+      expect(getUserListB.body.results[0]).toHaveProperty('emailAddress');
+      expect(getUserListB.body.results.map(u => u.name)).toContain(credsA.username);
+      expect(getUserListB.body.results.map(u => u.name)).toContain(credsB.username);
 
       const getSelfA = await request(server)
         .get('/data-api/user/self')
         .set('authorization', tokenA);
 
       expect(getSelfA.status).toBe(200);
-      expect(getSelfA.body).toHaveProperty('id');
-      expect(getSelfA.body).toHaveProperty('name', credsA.username);
-      expect(getSelfA.body).toHaveProperty('rating', null);
-      expect(getSelfA.body).toHaveProperty('reviews', []);
-      expect(getSelfA.body).toHaveProperty('tutorTopics', []);
-      expect(getSelfA.body).toHaveProperty('pupilTopics', []);
-      expect(getSelfA.body).toHaveProperty('isActive', true);
-      expect(getSelfA.body).toHaveProperty('roles', []);
-      expect(getSelfA.body).toHaveProperty('emailAddress', credsA.emailAddress);
+      expect(getSelfA.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(getSelfA.body).toHaveProperty('results');
+      expect(getSelfA.body.results).toHaveProperty('id');
+      expect(getSelfA.body.results).toHaveProperty('name', credsA.username);
+      expect(getSelfA.body.results).toHaveProperty('rating', null);
+      expect(getSelfA.body.results).toHaveProperty('reviews', []);
+      expect(getSelfA.body.results).toHaveProperty('tutorTopics', []);
+      expect(getSelfA.body.results).toHaveProperty('pupilTopics', []);
+      expect(getSelfA.body.results).toHaveProperty('isActive', true);
+      expect(getSelfA.body.results).toHaveProperty('roles', []);
+      expect(getSelfA.body.results).toHaveProperty('emailAddress', credsA.emailAddress);
 
       const getSelfB = await request(server)
         .get('/data-api/user/self')
         .set('authorization', tokenB);
 
       expect(getSelfB.status).toBe(200);
-      expect(getSelfB.body).toHaveProperty('id');
-      expect(getSelfB.body).toHaveProperty('name', credsB.username);
-      expect(getSelfB.body).toHaveProperty('rating', null);
-      expect(getSelfB.body).toHaveProperty('reviews', []);
-      expect(getSelfB.body).toHaveProperty('tutorTopics', []);
-      expect(getSelfB.body).toHaveProperty('pupilTopics', []);
-      expect(getSelfB.body).toHaveProperty('isActive', true);
-      expect(getSelfB.body).toHaveProperty('roles', []);
-      expect(getSelfB.body).toHaveProperty('emailAddress', credsB.emailAddress);
+      expect(getSelfB.body).toHaveProperty('info', {version: '1.0', type: 'object', count: 1});
+      expect(getSelfB.body).toHaveProperty('results');
+      expect(getSelfB.body.results).toHaveProperty('id');
+      expect(getSelfB.body.results).toHaveProperty('name', credsB.username);
+      expect(getSelfB.body.results).toHaveProperty('rating', null);
+      expect(getSelfB.body.results).toHaveProperty('reviews', []);
+      expect(getSelfB.body.results).toHaveProperty('tutorTopics', []);
+      expect(getSelfB.body.results).toHaveProperty('pupilTopics', []);
+      expect(getSelfB.body.results).toHaveProperty('isActive', true);
+      expect(getSelfB.body.results).toHaveProperty('roles', []);
+      expect(getSelfB.body.results).toHaveProperty('emailAddress', credsB.emailAddress);
     });
   });  
 });
