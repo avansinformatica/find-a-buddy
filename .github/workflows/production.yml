@@ -23,7 +23,7 @@ jobs:
                   NETLIFY_BASE: ../..
                   NETLIFY_CMD: npm build
                   NETLIFY_DIR: dist/apps/find-a-buddy
-                  NETLIFY_AUTH_TOKEN: 'MaHDChLBG5UT1I5j7kuqPh4zVKl7lCyzhbMIjLC31P8' # ${{ secrets.NETLIFY_AUTH_TOKEN }}
+                  #   NETLIFY_AUTH_TOKEN: 'MaHDChLBG5UT1I5j7kuqPh4zVKl7lCyzhbMIjLC31P8' # ${{ secrets.NETLIFY_AUTH_TOKEN }}
 # - uses: actions/checkout@v1
 # - uses: netlify/actions/cli@master
 #   env:
