@@ -1,43 +1,40 @@
 #  Name of workflow
-name: Production workflow
+name: Publish on Netlify
 
 # When workflow is triggered
 on:
     push:
         branches:
             - main
-            # - feature-*
+            - feature-*
 
-# Jobs to carry out
 jobs:
-    deploy:
-        # Operating system to run job on
+    publish:
         runs-on: ubuntu-latest
-        # Steps in job
+
         steps:
-            # Get code from repo
-            # - name: Checkout code
-            # - uses: actions/checkout@v1
-            # Install NodeJS
-            # - name: Use Node.js 18.x
-            # - uses: actions/setup-node@v1
-            #   with:
-            #       node-version: 18.x
-            # Run npm install and build on our code
-            # - run: npm install --legacy-peer-deps
-            # - run: npm run build --if-present --verbose
-            # Deploy to Netlify using our production secrets
-            # - name: Deploy to netlify
-            - uses: actions/checkout@v1
-            - uses: netlify/actions/cli@master
+            - uses: actions/checkout@master
+
+            - name: Publish
+              uses: netlify/actions/build@master
               env:
-                  NETLIFY_AUTH_TOKEN: 'MaHDChLBG5UT1I5j7kuqPh4zVKl7lCyzhbMIjLC31P8' # ${{ secrets.NETLIFY_AUTH_TOKEN }}
+                  GITHUB_TOKEN: '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' # ${{ secrets.GITHUB_TOKEN }}
                   NETLIFY_SITE_ID: '48a7ec73-bffc-4d2c-b8ea-59379ff0bf7d' # ${{ secrets.NETLIFY_SITE_ID }}
+                  NETLIFY_BASE: ../..
                   NETLIFY_CMD: npm build
-                  NETLIFY_DIR: site/_build
-                  NETLIFY_DEPLOY_MESSAGE: 'Prod deploy v${{ github.ref }}'
-                  NETLIFY_DEPLOY_TO_PROD: true
-                  deploy_alias: ${{ env.BRANCH_NAME }}
-                  build-directory: dist/find-a-buddy
-              with:
-                  args: deploy --dir=build --prod
+                  NETLIFY_DIR:
+                      dist/find-a-buddy
+
+                      # - uses: actions/checkout@v1
+                      # - uses: netlify/actions/cli@master
+                      #   env:
+                      #       NETLIFY_AUTH_TOKEN: 'MaHDChLBG5UT1I5j7kuqPh4zVKl7lCyzhbMIjLC31P8' # ${{ secrets.NETLIFY_AUTH_TOKEN }}
+                      #       NETLIFY_SITE_ID: '48a7ec73-bffc-4d2c-b8ea-59379ff0bf7d' # ${{ secrets.NETLIFY_SITE_ID }}
+                      #       NETLIFY_CMD: npm build
+                      #       NETLIFY_DIR: site/_build
+                      #       NETLIFY_DEPLOY_MESSAGE: 'Prod deploy v${{ github.ref }}'
+                      #       NETLIFY_DEPLOY_TO_PROD: true
+                      #       deploy_alias: ${{ env.BRANCH_NAME }}
+                      #       build-directory: dist/find-a-buddy
+                      #   with:
+                      #       args: deploy --dir=build --prod
