@@ -1,4 +1,3 @@
-on: push
 name: Publish on Netlify
 
 # When workflow is triggered
