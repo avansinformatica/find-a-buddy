@@ -16,19 +16,19 @@ jobs:
         # Steps in job
         steps:
             # Get code from repo
-            - name: Checkout code
-              uses: actions/checkout@v1
+            # - name: Checkout code
+            - uses: actions/checkout@v1
             # Install NodeJS
-            - name: Use Node.js 18.x
-              uses: actions/setup-node@v1
+            # - name: Use Node.js 18.x
+            - uses: actions/setup-node@v1
               with:
                   node-version: 18.x
             # Run npm install and build on our code
-            - run: npm install --legacy-peer-deps
+            # - run: npm install --legacy-peer-deps
             # - run: npm run build --if-present --verbose
             # Deploy to Netlify using our production secrets
-            - name: Deploy to netlify
-              uses: netlify/actions/cli@master
+            # - name: Deploy to netlify
+            - uses: netlify/actions/cli@master
               env:
                   NETLIFY_AUTH_TOKEN: 'MaHDChLBG5UT1I5j7kuqPh4zVKl7lCyzhbMIjLC31P8' # ${{ secrets.NETLIFY_AUTH_TOKEN }}
                   NETLIFY_SITE_ID: '48a7ec73-bffc-4d2c-b8ea-59379ff0bf7d' # ${{ secrets.NETLIFY_SITE_ID }}
