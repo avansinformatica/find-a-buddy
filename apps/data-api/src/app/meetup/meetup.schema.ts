@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import { Review, ReviewSchema } from './review.schema';
 import { User } from '../user/user.schema';
-import { UserInfo } from '@find-a-buddy/data';
+import { UserIdentity } from '@find-a-buddy/data';
 
 export type MeetupDocument = Meetup & Document;
 
@@ -36,7 +36,7 @@ export class Meetup {
   tutorRef: User;
 
   @Prop({required: true, type: {id: String, name: String}})
-  tutor: UserInfo;
+  tutor: UserIdentity;
 
   @Prop({
     required: true,
@@ -47,7 +47,7 @@ export class Meetup {
   pupilRef: User;
 
   @Prop({required: true, type: {id: String, name: String}})
-  pupil: UserInfo;
+  pupil: UserIdentity;
 }
 
 export const MeetupSchema = SchemaFactory.createForClass(Meetup);
