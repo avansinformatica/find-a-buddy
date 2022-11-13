@@ -116,9 +116,9 @@ describe('AuthService', () => {
 
   describe('register user', () => {
     it('should register a new user', async () => {
-      const exampleUser = {username: 'henk', password: 'supersecret123'};
+      const exampleUser = {username: 'henk', password: 'supersecret123', emailAddress: 'mail@mail.com'};
 
-      await service.registerUser(exampleUser.username, exampleUser.password);
+      await service.registerUser(exampleUser.username, exampleUser.password, exampleUser.emailAddress);
 
       const record = await mongoc.db("test").collection("identities").findOne({username: exampleUser.username});
 

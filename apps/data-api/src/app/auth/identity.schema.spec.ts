@@ -35,12 +35,13 @@ describe('Identity Schema', () => {
   });
 
   beforeEach(async () => {
-    mongoc.db('test').collection('identities').deleteMany({});
+    await mongoc.db('test').collection('identities').deleteMany({});
   });
 
   afterAll(async () => {
     await disconnect();
     await mongod.stop();
+    await mongoc.close();
   });
 
   it('has a required username', () => {

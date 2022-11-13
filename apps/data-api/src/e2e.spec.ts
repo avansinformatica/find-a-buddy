@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request = require('supertest');
 
 import { MongooseModule } from "@nestjs/mongoose";
 import { Test, TestingModule } from "@nestjs/testing";
