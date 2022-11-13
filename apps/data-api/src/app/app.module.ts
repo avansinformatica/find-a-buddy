@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { TokenMiddleware } from './auth/token.middleware';
 import { DataModule } from './data.module';
+import { RcmdModule } from './rmcd.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DataModule } from './data.module';
     ),
     AuthModule,
     DataModule,
+    RcmdModule,
     RouterModule.register([
       {
         path: 'auth-api',
@@ -22,6 +24,10 @@ import { DataModule } from './data.module';
       {
         path: 'data-api',
         module: DataModule,
+      },
+      {
+        path: 'rcmd-api',
+        module: RcmdModule,
       },
     ]),
   ],
