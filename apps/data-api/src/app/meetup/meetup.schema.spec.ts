@@ -75,7 +75,7 @@ describe('Meetup Schema', () => {
 
     const err = model.validateSync();
 
-    expect(err.errors.tutor).toBeInstanceOf(Error);
+    expect(err.errors.tutorRef).toBeInstanceOf(Error);
   });
 
   it('has a required pupil', () => {
@@ -83,6 +83,6 @@ describe('Meetup Schema', () => {
 
     const err = model.validateSync();
 
-    expect(err.errors.pupil).toBeInstanceOf(Error);
+    expect(err.errors.pupilRef).toBeInstanceOf(Error);
   });
 });

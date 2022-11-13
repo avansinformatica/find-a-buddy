@@ -53,12 +53,40 @@ describe('User Schema', () => {
   });
 
   it('has a unique username', async () => {
-    const original = new userModel({name: 'henk'});
-    const duplicate = new userModel({name: 'henk'});
+    const original = new userModel({name: 'henk', emailAddress: 'henk@henk.nl'});
+    const duplicate = new userModel({name: 'henk', emailAddress: 'henk@henk.nl'});
 
     await original.save();
 
     await expect(duplicate.save()).rejects.toThrow();
+  });
+
+  it('has an empty role list by default', () => {
+    const model = new userModel();
+
+    expect(model.roles).toStrictEqual([]);
+  });
+
+  it('is active by default', () => {
+    const model = new userModel();
+
+    expect(model.isActive).toBe(true);
+  });
+
+  it('has a required email address', () => {
+    const model = new userModel();
+
+    const err = model.validateSync();
+
+    expect(err.errors.emailAddress).toBeInstanceOf(Error);
+  });
+
+  it('does not accept an invalid email address', () => {
+    const model = new userModel({emailAddress: 'ditisgeenemail'});
+
+    const err = model.validateSync();
+
+    expect(err.errors.emailAddress).toBeInstanceOf(Error);
   });
 
   it('has an empty list as default tutor topics', () => {

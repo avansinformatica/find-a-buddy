@@ -3,13 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { User as UserModel, UserDocument } from '../schemas/user.schema';
+import { User as UserModel, UserDocument } from './user.schema';
+import { Meetup, MeetupDocument } from '../meetup/meetup.schema';
 
 import { User, UserInfo } from '@find-a-buddy/data';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(UserModel.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
+    @InjectModel(Meetup.name) private meetupModel: Model<MeetupDocument>) {}
 
   async getAll(): Promise<UserInfo[]> {
     return this.userModel.aggregate([
@@ -26,7 +29,7 @@ export class UserService {
             input: {$filter: {
               input: '$meetups', 
               as: 'meetup',
-              cond: {$and: [{$eq: ['$$meetup.tutor', '$$user']}, {$gt: ['$$meetup.review', null]}]}
+              cond: {$and: [{$eq: ['$$meetup.tutorRef', '$$user']}, {$gt: ['$$meetup.review', null]}]}
             }},
             as: 'meetup',
             in: {
@@ -65,17 +68,17 @@ export class UserService {
             input: {$filter: {
               input: '$meetups', 
               as: 'meetup',
-              cond: {$and: [{$eq: ['$$meetup.tutor', '$$user']}, {$gt: ['$$meetup.review', null]}]}
+              cond: {$and: [{$eq: ['$$meetup.tutorRef', '$$user']}, {$gt: ['$$meetup.review', null]}]}
             }},
             as: 'meetup',
             in: {
+              rating: '$$meetup.review.rating',
               id: '$$meetup.id',
-              pupil: '$$meetup.pupil',
-              tutor: '$$meetup.tutor',
               topic: '$$meetup.topic',
               datetime: '$$meetup.datetime',
-              rating: '$$meetup.review.rating',
               text: '$$meetup.review.text',
+              tutor: '$$meetup.tutor',
+              pupil: '$$meetup.pupil',
             },
           }},
         }},
@@ -87,6 +90,8 @@ export class UserService {
         _id: 0,
         __v: 0,
         meetups: 0,
+        'reviews.tutor._id': 0,
+        'reviews.pupil._id': 0,
       }},
     ]);
 

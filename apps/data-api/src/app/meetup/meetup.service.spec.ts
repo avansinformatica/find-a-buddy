@@ -6,12 +6,12 @@ import { disconnect, Model } from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 import { MeetupService } from './meetup.service';
-import { User, UserDocument, UserSchema } from '../schemas/user.schema';
-import { Meetup, MeetupDocument, MeetupSchema } from '../schemas/meetup.schema';
-import { Topic, TopicDocument, TopicSchema } from '../schemas/topic.schema';
-import { TopicService } from './topic.service';
+import { User, UserDocument, UserSchema } from '../user/user.schema';
+import { Meetup, MeetupDocument, MeetupSchema } from './meetup.schema';
+import { Topic, TopicDocument, TopicSchema } from '../topic/topic.schema';
+import { TopicService } from '../topic/topic.service';
 
-describe('UserService', () => {
+describe('MeetupService', () => {
   let service: MeetupService;
   let mongod: MongoMemoryServer;
   let mongoc: MongoClient;
@@ -58,27 +58,33 @@ describe('UserService', () => {
     topicTubes = new topicModel({title: 'tubes'});
     topicMushrooms = new topicModel({title: 'mushrooms'});
 
-    mario = new userModel({name: 'mario', tutorTopics: ['coins'], pupilTopics: ['mushrooms']});
-    luigi = new userModel({name: 'luigi', pupilTopics: ['coins']});
-    yoshi = new userModel({name: 'yoshi', tutorTopics: ['coins'], pupilTopics: ['tubes']});
-    toad = new userModel({name: 'toad', tutorTopics: ['tubes', 'mushrooms'], pupilTopics: ['coins']});
+    mario = new userModel({name: 'mario', emailAddress: 'mail@address.com', tutorTopics: ['coins'], pupilTopics: ['mushrooms']});
+    luigi = new userModel({name: 'luigi', emailAddress: 'mail@address.com', pupilTopics: ['coins']});
+    yoshi = new userModel({name: 'yoshi', emailAddress: 'mail@address.com', tutorTopics: ['coins'], pupilTopics: ['tubes']});
+    toad = new userModel({name: 'toad', emailAddress: 'mail@address.com', tutorTopics: ['tubes', 'mushrooms'], pupilTopics: ['coins']});
 
     meetupA = new meetupModel({
-      tutor: mario._id,
-      pupil: luigi._id,
+      tutorRef: mario._id,
+      pupilRef: luigi._id,
+      tutor: {name: mario.name, id: mario.id},
+      pupil: {name: luigi.name, id: luigi.id},
       topic: 'coins',
       datetime: Date.now(),
     });
     meetupB = new meetupModel({
-      tutor: yoshi._id,
-      pupil: toad._id,
+      tutorRef: yoshi._id,
+      pupilRef: toad._id,
+      tutor: {name: yoshi.name, id: yoshi.id},
+      pupil: {name: toad.name, id: toad.id},
       topic: 'coins',
       datetime: Date.now(),
       accepted: true,
     });
     meetupC = new meetupModel({
-      tutor: toad._id,
-      pupil: yoshi._id,
+      tutorRef: toad._id,
+      pupilRef: yoshi._id,
+      tutor: {name: toad.name, id: toad.id},
+      pupil: {name: yoshi.name, id: yoshi.id},
       topic: 'tubes',
       datetime: Date.now(),
     });
@@ -122,11 +128,14 @@ describe('UserService', () => {
 
   describe('create', () => {
     it('creates a meetup', async () => {
-      await service.create('mushrooms', new Date(), toad.id, mario.id);
+      const result = await service.create('mushrooms', new Date(), toad.id, mario.id);
 
-      const meetup = await meetupModel.find();
-
-      expect(meetup.map(m => m.topic)).toContain('mushrooms');
+      const meetups = await meetupModel.find();
+      
+      expect(meetups.map(m => m.topic)).toContain('mushrooms');
+      const meetup = meetups.filter(m => m.topic == 'mushrooms')[0];
+      
+      expect(result).toHaveProperty('id', meetup.id);
 
       const updatedToad = await userModel.findOne({id: toad.id});
       const updatedMario = await userModel.findOne({id: mario.id});
@@ -197,6 +206,28 @@ describe('UserService', () => {
       const result = await service.getOne('wrongid', meetupA.id);
       
       expect(result).toStrictEqual(null);
+    });
+  });
+
+  describe('acceptInvite', () => {
+    it('accepts an invitation', async () => {
+      await service.acceptInvite(toad.id, meetupC.id);
+
+      const meetup = await meetupModel.findOne({id: meetupC.id});
+
+      expect(meetup.accepted).toBe(true);
+    });
+
+    it('does not accept when user is not tutor', async () => {
+      await expect(service.acceptInvite(yoshi.id, meetupC.id)).rejects.toThrow();
+
+      const meetup = await meetupModel.findOne({id: meetupC.id});
+
+      expect(meetup.accepted).toBe(false);
+    });
+
+    it('has no effect on nonexistent meetup', async () => {
+      await expect(service.acceptInvite(yoshi.id, 'notameetup')).rejects.toThrow();
     });
   });
 

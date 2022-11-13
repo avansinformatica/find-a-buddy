@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 
-import { MeetupService } from '../data-services/meetup.service';
+import { MeetupService } from './meetup.service';
 
-import { Meetup, MeetupCreation, Review } from '@find-a-buddy/data';
+import { Meetup, MeetupCreation, ResourceId, Review } from '@find-a-buddy/data';
 import { InjectToken, Token } from '../auth/token.decorator';
 
 @Controller('meetup')
@@ -25,11 +25,20 @@ export class MeetupController {
   }
 
   @Post()
-  async create(@InjectToken() token: Token, @Body() meetup: MeetupCreation) {
+  async create(@InjectToken() token: Token, @Body() meetup: MeetupCreation): Promise<ResourceId> {
     try {
-      await this.meetupService.create(meetup.topic, meetup.datetime, meetup.tutorId, token.id);
+      return await this.meetupService.create(meetup.topic, meetup.datetime, meetup.tutorId, token.id);
     } catch (e) {
       throw new HttpException('invalid meetup', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('/:id/accept')
+  async acceptInvite(@InjectToken() token: Token, @Param('id') id: string) {
+    try{
+      await this.meetupService.acceptInvite(token.id, id);
+    } catch (e) {
+      throw new HttpException('invalid invite accept', HttpStatus.BAD_REQUEST);
     }
   }
 

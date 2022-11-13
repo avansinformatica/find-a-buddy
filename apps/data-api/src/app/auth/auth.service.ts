@@ -6,8 +6,8 @@ import { hash, compare } from 'bcrypt';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Identity, IdentityDocument } from '../schemas/identity.schema';
-import { User, UserDocument } from '../schemas/user.schema';
+import { Identity, IdentityDocument } from './identity.schema';
+import { User, UserDocument } from '../user/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -16,8 +16,8 @@ export class AuthService {
         @InjectModel(User.name) private userModel: Model<UserDocument>
     ) {}
 
-    async createUser(name: string): Promise<string> {
-        const user = new this.userModel({name});
+    async createUser(name: string, emailAddress: string): Promise<string> {
+        const user = new this.userModel({name, emailAddress});
         await user.save();
         return user.id;
       }

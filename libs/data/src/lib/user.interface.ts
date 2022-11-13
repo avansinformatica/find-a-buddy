@@ -9,7 +9,7 @@ export interface UserIdentity {
 export interface UserInfo extends UserIdentity {
     rating: number
     isActive: boolean
-    emailAdress: string
+    emailAddress: string
     roles: string[]
 
     pupilTopics: string[]

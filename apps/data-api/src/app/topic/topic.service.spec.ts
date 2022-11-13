@@ -6,8 +6,8 @@ import { Model, disconnect } from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 import { TopicService } from './topic.service';
-import { Topic, TopicSchema, TopicDocument } from '../schemas/topic.schema';
-import { User, UserSchema, UserDocument } from '../schemas/user.schema';
+import { Topic, TopicSchema, TopicDocument } from './topic.schema';
+import { User, UserSchema, UserDocument } from '../user/user.schema';
 
 describe('TopicService', () => {
   let service: TopicService;
@@ -100,10 +100,12 @@ describe('TopicService', () => {
     expect(results.map(t => t.title)).toContain(testTopics[0].title);
     expect(results.map(t => t.title)).toContain(testTopics[1].title);
     expect(results).toHaveLength(2);
+    expect(results[0]).toHaveProperty('_id', undefined);
+    expect(results[0]).toHaveProperty('__v', undefined);
   });
 
   describe('user interaction', () => {
-    const testUser = {name: 'luigi', id: 'l1234'};
+    const testUser = {name: 'luigi', id: 'l1234', emailAddress: 'luigi@luigi.it'};
     const testTopic = 'mushrooms';
 
     beforeEach(async () => {

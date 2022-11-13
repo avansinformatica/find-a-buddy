@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { UserController } from './user.controller';
 
-import { UserService } from '../data-services/user.service';
+import { UserService } from './user.service';
 
 describe('TopicController', () => {
   let app: TestingModule;
@@ -30,6 +30,9 @@ describe('TopicController', () => {
       const exampleUser = {
         id: 'id123',
         name: 'alexander',
+        isActive: true,
+        emailAddress: 'alexander@avans.nl',
+        roles: [],
         meetups: [],
         tutorTopics: ["nosql"],
         pupilTopics: ["flying"],
@@ -53,6 +56,9 @@ describe('TopicController', () => {
       const exampleUser = {
         id: 'id123',
         name: 'alexander',
+        isActive: true,
+        emailAddress: 'alexander@avans.nl',
+        roles: [],
         meetups: [],
         tutorTopics: ["nosql"],
         pupilTopics: ["flying"],

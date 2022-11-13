@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Topic, TopicDocument } from '../schemas/topic.schema';
-import { User, UserDocument } from '../schemas/user.schema';
+import { Topic, TopicDocument } from '../topic/topic.schema';
+import { User, UserDocument } from '../user/user.schema';
 import { Role } from '@find-a-buddy/data';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class TopicService {
   }
 
   async getAll(): Promise<Topic[]> {
-    return this.topicModel.find();
+    return this.topicModel.find({}, {_id: 0, __v: 0});
   }
 
   async addTopic(userId: string, topic: string, role: Role) {

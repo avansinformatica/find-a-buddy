@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TopicController } from './topic.controller';
 
 import { Token } from '../auth/token.decorator';
-import { TopicService } from '../data-services/topic.service';
+import { TopicService } from './topic.service';
 
 describe('TopicController', () => {
   let app: TestingModule;

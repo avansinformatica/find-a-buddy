@@ -3,7 +3,8 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 
 import { Review, ReviewSchema } from './review.schema';
-import { User } from './user.schema';
+import { User } from '../user/user.schema';
+import { UserIdentity } from '@find-a-buddy/data';
 
 export type MeetupDocument = Meetup & Document;
 
@@ -32,7 +33,10 @@ export class Meetup {
     // cannot use User.name here, as it leads to a circular dependency
     ref: 'User',
   })
-  tutor: User;
+  tutorRef: User;
+
+  @Prop({required: true, type: {id: String, name: String}})
+  tutor: UserIdentity;
 
   @Prop({
     required: true,
@@ -40,7 +44,10 @@ export class Meetup {
     // cannot use User.name here, as it leads to a circular dependency
     ref: 'User',
   })
-  pupil: User;
+  pupilRef: User;
+
+  @Prop({required: true, type: {id: String, name: String}})
+  pupil: UserIdentity;
 }
 
 export const MeetupSchema = SchemaFactory.createForClass(Meetup);

@@ -1,21 +1,20 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 
-import { ResourceId } from '@find-a-buddy/data';
+import { ResourceId, Token, UserCredentials, UserRegistration } from '@find-a-buddy/data';
 
 import { AuthService } from './auth.service';
-import { IdentityDTO } from './identity.dto';
 
 @Controller()
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post('register')
-    async register(@Body() identityDTO: IdentityDTO): Promise<ResourceId> {
+    async register(@Body() credentials: UserRegistration): Promise<ResourceId> {
         try {
-            await this.authService.registerUser(identityDTO.username, identityDTO.password);
+            await this.authService.registerUser(credentials.username, credentials.password);
     
             return {
-                id: await this.authService.createUser(identityDTO.username)
+                id: await this.authService.createUser(credentials.username, credentials.emailAddress),
             };
         } catch (e) {
             throw new HttpException('Username invalid', HttpStatus.BAD_REQUEST);
@@ -23,9 +22,11 @@ export class AuthController {
     }
 
     @Post('login')
-    async login(@Body() identityDTO: IdentityDTO): Promise<string> {
+    async login(@Body() credentials: UserCredentials): Promise<Token> {
         try {
-            return await this.authService.generateToken(identityDTO.username, identityDTO.password);
+            return {
+                token: await this.authService.generateToken(credentials.username, credentials.password)
+            };
         } catch (e) {
             throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         }
