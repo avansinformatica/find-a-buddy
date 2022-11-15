@@ -8,9 +8,11 @@ import { MongoClient } from 'mongodb';
 import { UserService } from './user.service';
 import { User, UserDocument, UserSchema } from './user.schema';
 import { Meetup, MeetupDocument, MeetupSchema } from '../meetup/meetup.schema';
+import { Neo4jService } from '../neo4j/neo4j.service';
 
 describe('UserService', () => {
   let service: UserService;
+  let neo4jService: Neo4jService;
   let mongod: MongoMemoryServer;
   let mongoc: MongoClient;
   let userModel: Model<UserDocument>;
@@ -75,10 +77,19 @@ describe('UserService', () => {
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         MongooseModule.forFeature([{ name: Meetup.name, schema: MeetupSchema }]),
       ],
-      providers: [UserService],
+      providers: [
+        UserService,
+        {
+          provide: Neo4jService,
+          useValue: {
+            singleWrite: jest.fn(),
+          }
+        },
+      ],
     }).compile();
 
     service = app.get<UserService>(UserService);
+    neo4jService = app.get<Neo4jService>(Neo4jService);
     userModel = app.get<Model<UserDocument>>(getModelToken(User.name));
     meetupModel = app.get<Model<MeetupDocument>>(getModelToken(Meetup.name));
 
@@ -201,5 +212,14 @@ describe('UserService', () => {
       expect(result).toHaveProperty('reviews');
       expect(result.reviews).toHaveLength(2);
     });
+  });
+
+  describe('inviteFriend', () => {
+    it('executes correct cypher query in the neo4j service', async () => {
+      const singleWrite = jest.spyOn(neo4jService, 'singleWrite')
+        .mockImplementation((q, p) => undefined)
+    });
+
+    it.todo('does not execute cypher query when other user does not exist');
   });
 });

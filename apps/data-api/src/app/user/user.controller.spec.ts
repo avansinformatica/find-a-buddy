@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Token } from '../auth/token.decorator';
 
 import { UserController } from './user.controller';
 
@@ -17,6 +18,9 @@ describe('TopicController', () => {
         useValue: {
           getAll: jest.fn(),
           getOne: jest.fn(),
+          inviteFriend: jest.fn(),
+          acceptInvite: jest.fn(),
+          removeFriend: jest.fn(),
         },
       }],
     }).compile();
@@ -74,6 +78,23 @@ describe('TopicController', () => {
 
       expect(getOne).toBeCalledTimes(1);
       expect(result).toHaveProperty('id', exampleUser.id);
+    });
+  });
+
+  describe('inviteFriend', () => {
+    it('should call inviteFriend on the service', async () => {
+      const token: Token = {username: 'dion', id: 'dion123'};
+      const otherId = 'other1234';
+
+      const inviteFriend = jest.spyOn(userService, 'inviteFriend')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .mockImplementation(async () => ({id: 'id123'}));
+
+      const result = await userController.inviteFriend(token, otherId);
+
+      expect(inviteFriend).toBeCalledTimes(1);
+      expect(inviteFriend).toBeCalledWith(token.id, otherId);
+      expect(result).toHaveProperty('id', 'id123');
     });
   });
 });

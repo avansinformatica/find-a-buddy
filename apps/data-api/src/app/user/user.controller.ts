@@ -1,14 +1,13 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
 
 import { UserService } from './user.service';
 
-import { UserInfo, User } from '@find-a-buddy/data';
+import { UserInfo, User, ResourceId } from '@find-a-buddy/data';
 import { InjectToken, Token } from '../auth/token.decorator';
-import { Neo4jService } from '../neo4j/neo4j.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService, private readonly neo4jService: Neo4jService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   async getAll(): Promise<UserInfo[]> {
@@ -22,10 +21,19 @@ export class UserController {
     return result;
   }
 
-  @Get('neo')
-  async testNeo(): Promise<unknown> {
-    const result = await this.neo4jService.singleRead('MATCH (n)-[r]-(m) RETURN n.name,r,m.name');
-    return result.records//.map(r => r.toObject());
+  @Post(':id/invite')
+  async inviteFriend(@InjectToken() token: Token, @Param('id') otherId: string): Promise<ResourceId> {
+    return this.userService.inviteFriend(token.id, otherId);
+  }
+
+  @Post(':id/accept')
+  async acceptInvite(@Param('id') inviteId: string) {
+    await this.userService.acceptInvite(inviteId);
+  }
+
+  @Delete(':id/friend')
+  async removeFriend(@InjectToken() token: Token, @Param('id') other: string) {
+    await this.userService.removeFriend(token.id, other);
   }
 
   @Get(':id')

@@ -2,8 +2,13 @@ import neo4j, { Result, Driver, SessionMode, ManagedTransaction } from 'neo4j-dr
 import { Injectable, Inject, OnApplicationShutdown } from '@nestjs/common';
 import { Neo4jConfig } from './neo4j-config.interface';
 import { NEO4J_CONFIG, NEO4J_DRIVER } from './neo4j.constants';
+// import { Neo4jQuery, ReadWriteMode } from './neo4j.query';
 
-type TransactionWork = (tx: ManagedTransaction) => Promise<Result>;
+export type TransactionWork = (tx: ManagedTransaction) => Promise<Result>;
+
+// function getMode(mode: ReadWriteMode): SessionMode {
+//   return mode == 'read' ? neo4j.session.READ : neo4j.session.WRITE;
+// }
 
 @Injectable()
 export class Neo4jService implements OnApplicationShutdown {
@@ -20,17 +25,22 @@ export class Neo4jService implements OnApplicationShutdown {
   }
 
   private async executeSingle(mode: SessionMode, query: string, params?: unknown): Promise<Result> {
-    console.log(query)
     const session = this.getSession(mode);
     const result = await session.run(query, params);
     session.close();
-    console.log(result)
     return result;
   }
 
-  private async executeTransaction(mode: SessionMode, transactionWork: TransactionWork) {
+  private async executeTransaction(mode: SessionMode, transactionWork: TransactionWork): Promise<Result> {
     const session = this.getSession(neo4j.session.READ);
-    const result = session.executeRead(transactionWork);
+
+    let result;
+    if (mode === neo4j.session.READ) {
+      result = await session.executeRead(transactionWork);
+    } else {
+      result = await session.executeWrite(transactionWork);
+    }
+
     session.close();
     return result;
   }
@@ -39,6 +49,7 @@ export class Neo4jService implements OnApplicationShutdown {
       return this.config;
   }
 
+  // use these two for access to neo4j result object when running one query
   async singleRead(query: string, params?: unknown): Promise<Result> {
     return this.executeSingle(neo4j.session.READ, query, params);
   }
@@ -47,6 +58,7 @@ export class Neo4jService implements OnApplicationShutdown {
     return this.executeSingle(neo4j.session.WRITE, query, params);
   }
 
+  // use these two for access to neo4j result object when running transactions
   async readTransaction(transactionWork: TransactionWork): Promise<Result> {
     return this.executeTransaction(neo4j.session.READ, transactionWork);
   }
@@ -54,6 +66,18 @@ export class Neo4jService implements OnApplicationShutdown {
   async writeTransaction(transactionWork: TransactionWork): Promise<Result> {
     return this.executeTransaction(neo4j.session.READ, transactionWork);
   }
+
+  // here the neo4j driver is abstracted away from the outside
+  // TODO handle 64 bit integers
+  // TODO clean returned object to match our own Node and Relation type?
+  // TODO how to handle variadic types?
+  // async run<R>(query: Neo4jQuery<R>, params?: unknown): Promise<R[]> {
+  //   const result = await this.executeSingle(getMode(query.mode), query.text, params);
+  //   return result.records.map(r => r.toObject());
+  // }
+
+  // transaction with neo4j driver abstracted away
+  // TODO
 
   onApplicationShutdown() {
     return this.driver.close()

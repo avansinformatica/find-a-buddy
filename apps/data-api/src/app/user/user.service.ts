@@ -5,14 +5,16 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { User as UserModel, UserDocument } from './user.schema';
 import { Meetup, MeetupDocument } from '../meetup/meetup.schema';
+import { Neo4jService } from '../neo4j/neo4j.service';
 
-import { User, UserInfo } from '@find-a-buddy/data';
+import { ResourceId, User, UserInfo } from '@find-a-buddy/data';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
-    @InjectModel(Meetup.name) private meetupModel: Model<MeetupDocument>) {}
+    @InjectModel(Meetup.name) private meetupModel: Model<MeetupDocument>,
+    private readonly neo4jService: Neo4jService) {}
 
   async getAll(): Promise<UserInfo[]> {
     return this.userModel.aggregate([
@@ -96,5 +98,31 @@ export class UserService {
     ]);
 
     return users[0];
+  }
+
+  async inviteFriend(inviterId: string, inviteeId: string): Promise<ResourceId> {
+    const other = await this.userModel.findOne({id: inviteeId});
+
+    if (other) {
+      const result = await this.neo4jService.singleWrite('', {});
+    }
+
+    return ;
+  }
+
+  async acceptInvite(inviteId: string) {
+    throw new Error();
+  }
+
+  // async makeFriend(currentId: string, otherId: string) {
+  //   // const other = await this.userModel.findOne({id: otherId});
+
+  //   // if (other) {
+  //     await this.neo4jService.singleWrite('MERGE (a:User {id: $idA}) MERGE (b:User {id: $idB}) MERGE (a)-[:Friends {since: $now}]-(b)', {idA: currentId, idB: otherId, now: new Date().toUTCString()});
+  //   // }
+  // }
+
+  async removeFriend(idA: string, idB: string) {
+    await this.neo4jService.singleWrite('', {idA, idB});
   }
 }
