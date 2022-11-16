@@ -11,7 +11,7 @@ export class AuthController {
     @Post('register')
     async register(@Body() credentials: UserRegistration): Promise<ResourceId> {
         try {
-            await this.authService.registerUser(credentials.username, credentials.password);
+            await this.authService.registerUser(credentials.username, credentials.password, credentials.emailAddress);
     
             return {
                 id: await this.authService.createUser(credentials.username, credentials.emailAddress),

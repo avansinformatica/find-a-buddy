@@ -31,10 +31,10 @@ export class AuthService {
         })
     }
 
-    async registerUser(username: string, password: string) {
+    async registerUser(username: string, password: string, emailAddress: string) {
         const generatedHash = await hash(password, parseInt(process.env.SALT_ROUNDS, 10));
 
-        const identity = new this.identityModel({username, hash: generatedHash});
+        const identity = new this.identityModel({username, hash: generatedHash, emailAddress});
 
         await identity.save();
     }

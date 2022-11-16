@@ -1,30 +1,30 @@
 {
-  "name": "find-a-buddy-e2e",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/find-a-buddy-e2e/src",
-  "projectType": "application",
-  "targets": {
-    "e2e": {
-      "executor": "@nrwl/cypress:cypress",
-      "options": {
-        "cypressConfig": "apps/find-a-buddy-e2e/cypress.config.ts",
-        "devServerTarget": "find-a-buddy:serve:development",
-        "testingType": "e2e"
-      },
-      "configurations": {
-        "production": {
-          "devServerTarget": "find-a-buddy:serve:production"
+    "name": "find-a-buddy-e2e",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/find-a-buddy-e2e/src",
+    "projectType": "application",
+    "targets": {
+        "e2e": {
+            "executor": "@nrwl/cypress:cypress",
+            "options": {
+                "cypressConfig": "apps/find-a-buddy-e2e/cypress.config.ts",
+                "devServerTarget": "find-a-buddy:serve:development",
+                "testingType": "e2e"
+            },
+            "configurations": {
+                "production": {
+                    "devServerTarget": "find-a-buddy:serve:production"
+                }
+            }
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["apps/find-a-buddy-e2e/**/*.{js,ts}"]
+            }
         }
-      }
     },
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/find-a-buddy-e2e/**/*.{js,ts}"]
-      }
-    }
-  },
-  "tags": [],
-  "implicitDependencies": ["find-a-buddy"]
+    "tags": [],
+    "implicitDependencies": ["find-a-buddy"]
 }
