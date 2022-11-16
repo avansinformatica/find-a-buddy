@@ -1,0 +1,69 @@
+<div *ngIf="item === undefined">
+  <fab-util-spinner></fab-util-spinner>
+</div>
+
+<div *ngIf="item">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/dashboard">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="/meals">Meals</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ item.name }}
+      </li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col mr-auto">
+      <h1>{{ item.name }}</h1>
+      <p>
+        {{ item.description }}
+        Geschikt voor {{ item.maxAmountOfParticipants }} deelnemers.
+      </p>
+      <h2>Slechts € {{ item.price }}</h2>
+
+      <h3>Over de kok</h3>
+      <p>
+        {{ item.cook?.firstName }} {{ item.cook?.lastName }} <br />
+        {{ item.cook?.emailAdress }}
+      </p>
+
+      <p>
+        Vega: {{ item.isVega }}<br />
+        Vegan: {{ item.isVegan }}<br />
+        Allergenen: {{ item.allergenes }} <br />
+        Meenemen: {{ item.isToTakeHome }}
+      </p>
+
+      <strong>{{ item.participants?.length }} Deelnemers</strong>
+
+      <div
+        *ngIf="authService.userMayEdit(item.cook?.id) | async"
+        class="row gy-2"
+      >
+        <div class="col-auto py-5">
+          <button routerLink="edit" type="button" class="btn btn-warning">
+            Edit
+          </button>
+        </div>
+        <div class="col-auto py-5">
+          <button type="button" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+    <!--  -->
+    <div class="col mr-auto">
+      <div class="card">
+        <div class="card-body">
+          <img
+            src="{{ item.imageUrl }}"
+            class="card-img-top movie-card-img"
+            aria-label="Placeholder: Thumbnail"
+            alt=""
+          />
+        </div>
+      </div>
+    </div>
+    <!--  -->
+  </div>
+</div>

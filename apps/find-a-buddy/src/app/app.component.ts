@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'find-a-buddy-root',
+  selector: 'fab-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  title = 'find-a-buddy';
+export class AppComponent implements OnInit {
+  ngOnInit() {
+    console.log('AppComponent geladen');
+  }
 }

@@ -1,14 +1,22 @@
 import { Id } from "./id.type";
+import { Review } from "./review.interface";
+import { UserIdentity } from "./user.interface";
 
-export interface MeetUp {
+export interface Meetup {
     id: Id;
 
     datetime: Date;
 
-    topicId: Id;
-    pupilId: Id;
-    tutorId: Id;
-    tutorAccepted: boolean;
+    topic: string;
+    pupil: UserIdentity;
+    tutor: UserIdentity;
+    accepted: boolean;
 
-    reviewId?: string;
+    review?: Review;
+}
+
+export interface MeetupCreation {
+    topic: string;
+    tutorId: Id;
+    datetime: Date;
 }

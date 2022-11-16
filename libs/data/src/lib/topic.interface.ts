@@ -1,7 +1,14 @@
 import { Id } from "./id.type";
+import { Role } from "./roles";
 
 export interface Topic {
     id: Id;
     
-    name: string;
+    title: string;
+}
+
+export interface TopicUpdate {
+    title: string;
+
+    role: Role;
 }

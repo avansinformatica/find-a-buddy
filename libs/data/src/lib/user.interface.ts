@@ -1,9 +1,21 @@
-import { Id } from "./id.type";
+import { Id } from './id.type'
+import { Review } from './review.interface'
 
-export interface User {
-    id: Id;
+export interface UserIdentity {
+    id: Id
+    name: string
+}
 
-    name: string;
-    
-    reviews: [Id];
+export interface UserInfo extends UserIdentity {
+    rating: number
+    isActive: boolean
+    emailAddress: string
+    roles: string[]
+
+    pupilTopics: string[]
+    tutorTopics: string[]
+}
+
+export interface User extends UserInfo {
+    reviews: Review[]
 }
