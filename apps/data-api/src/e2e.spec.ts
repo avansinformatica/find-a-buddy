@@ -13,6 +13,7 @@ import { disconnect } from "mongoose";
 
 import { AuthModule } from './app/auth/auth.module';
 import { DataModule } from './app/data.module';
+import { RcmdModule } from './app/rmcd.module';
 import { TokenMiddleware } from './app/auth/token.middleware';
 import { ApiResponseInterceptor } from './app/api-response.interceptor';
 
@@ -36,6 +37,9 @@ let uri: string;
     }, {
       path: 'data-api',
       module: DataModule,
+    }, {
+      path: 'rcmd-api',
+      module: RcmdModule,
     }]),
   ],
   controllers: [],

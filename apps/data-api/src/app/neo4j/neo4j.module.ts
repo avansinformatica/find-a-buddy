@@ -30,4 +30,8 @@ export class Neo4jModule {
       ]
     }
   }
+
+  static forMock() {
+    
+  }
 }
